@@ -34,5 +34,9 @@ def gallery():
     return render_template("gallery.html")
 
 
+@app.route('/unnatfarm')
+def unnatfarm():
+    return render_template('unnatfarm.html')
+
 if __name__ == "__main__":
     app.run(debug=True)
