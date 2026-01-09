@@ -1193,6 +1193,434 @@
   </div>
 </section>
 
+<section id="uf-achievement-hero">
+  <style>
+    /* =========================================================
+       UF — ACHIEVEMENT HERO (SCOPED, DROP-IN) — UPDATED
+       Changes you asked (this round):
+       ✅ Removed the white background card behind paragraph
+       ✅ Made the text ONE continuous paragraph (no extra spans / gaps)
+       ✅ Tight, clean spacing (no extra line breaks/gaps between sentences)
+       ✅ Changed paragraph font-family (different from the rest)
+       ✅ Kept: responsive, slow reveal, slider, modal no-jump close
+       ========================================================= */
+
+    #uf-achievement-hero{
+      background: #fef4e6;
+      padding: clamp(56px, 7vw, 100px) 16px;
+      overflow: hidden;
+      position: relative;
+      isolation: isolate;
+      box-shadow: 0 -20px 70px rgba(0,0,0,0.10);
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      scroll-margin-top: 90px;
+    }
+
+    #uf-achievement-hero::before{
+      content:"";
+      position:absolute; inset:-2px;
+      pointer-events:none;
+      background:
+        radial-gradient(620px 360px at 18% 18%, rgba(229,35,40,.07), transparent 62%),
+        radial-gradient(620px 360px at 86% 30%, rgba(16,24,40,.06), transparent 64%),
+        linear-gradient(to right, rgba(16,24,40,.03) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(16,24,40,.025) 1px, transparent 1px);
+      background-size: auto, auto, 54px 54px, 54px 54px;
+      z-index: 0;
+    }
+
+    #uf-achievement-hero .uf-wrap{
+      width: min(1100px, 100%);
+      margin: 0 auto;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* Header */
+    #uf-achievement-hero .uf-header{
+      text-align: center;
+      margin-bottom: 18px;
+    }
+
+    #uf-achievement-hero .uf-eyebrow{
+      display:inline-block;
+      color: #e52328;
+      font-weight: 800;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      font-size: 13px;
+      margin-bottom: 12px;
+      position: relative;
+    }
+
+    #uf-achievement-hero .uf-eyebrow::after{
+      content:"";
+      position:absolute;
+      left:50%;
+      transform:translateX(-50%);
+      bottom:-8px;
+      width:44px;
+      height:3px;
+      background:#e52328;
+      border-radius: 999px;
+    }
+
+    #uf-achievement-hero .uf-title{
+      font-family: "Bebas Neue", Inter, system-ui, sans-serif;
+      font-size: clamp(34px, 6vw, 68px);
+      line-height: 1.03;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      margin: 16px 0 10px;
+      color: rgba(16,24,40,.92);
+    }
+
+    /* Paragraph (NO white background, new font, tight spacing) */
+    #uf-achievement-hero .uf-subtitle{
+      margin: 0 auto;
+      width: min(980px, 100%);
+      padding: 0;                 /* no card padding */
+      border: 0;                  /* no card border */
+      background: transparent;     /* no white bg */
+      box-shadow: none;           /* no shadow */
+      backdrop-filter: none;      /* none */
+
+      font-family: "Inter", system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; /* CHANGED */
+      font-size: clamp(14px, 1.55vw, 16px);
+      line-height: 1.45;          /* tighter */
+      color: rgba(16,24,40,.80);
+      text-wrap: pretty;
+      letter-spacing: 0.1px;
+    }
+
+    #uf-achievement-hero .uf-subtitle strong{
+      color: rgba(16,24,40,.95);
+      font-weight: 800;
+    }
+
+    /* Scroll reveal (slow) */
+    #uf-achievement-hero .uf-reveal{
+      opacity: 1;
+      transform: none;
+    }
+
+    #uf-achievement-hero.uf-reveal-on .uf-reveal{
+      opacity: 0;
+      transform: translateY(18px);
+      transition: opacity 1.35s ease, transform 1.35s ease;
+      will-change: opacity, transform;
+    }
+
+    #uf-achievement-hero.uf-reveal-on.in-view .uf-reveal{
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    #uf-achievement-hero.uf-reveal-on.in-view .uf-eyebrow{ transition-delay: .05s; }
+    #uf-achievement-hero.uf-reveal-on.in-view .uf-title{ transition-delay: .12s; }
+    #uf-achievement-hero.uf-reveal-on.in-view .uf-subtitle{ transition-delay: .22s; }
+    #uf-achievement-hero.uf-reveal-on.in-view .uf-gallery{ transition-delay: .34s; }
+
+    /* Blended gallery */
+    #uf-achievement-hero .uf-gallery{
+      margin-top: 22px;
+      position: relative;
+      border-radius: 22px;
+      overflow: hidden;
+      box-shadow: 0 22px 70px rgba(0,0,0,0.14);
+      background: rgba(255,255,255,0.18);
+      -webkit-mask-image: linear-gradient(to right, transparent 0%, rgba(0,0,0,1) 10%, rgba(0,0,0,1) 90%, transparent 100%);
+              mask-image: linear-gradient(to right, transparent 0%, rgba(0,0,0,1) 10%, rgba(0,0,0,1) 90%, transparent 100%);
+    }
+
+    #uf-achievement-hero .uf-track{
+      display:flex;
+      gap: 14px;
+      padding: 16px;
+      align-items:center;
+      will-change: transform;
+      animation: ufMarquee 40s linear infinite;
+    }
+
+    #uf-achievement-hero .uf-set{
+      display:flex;
+      gap: 14px;
+      align-items:center;
+    }
+
+    #uf-achievement-hero .uf-img{
+      width: clamp(150px, 23vw, 260px);
+      height: clamp(110px, 15vw, 170px);
+      object-fit: cover;
+      border-radius: 16px;
+      box-shadow: 0 14px 34px rgba(0,0,0,.18);
+      border: 0;
+      cursor: pointer;
+      transform: translateZ(0);
+      filter: saturate(1.06) contrast(1.02);
+      transition: transform .25s ease, box-shadow .25s ease;
+      user-select: none;
+      -webkit-user-drag: none;
+    }
+
+    #uf-achievement-hero .uf-img:hover{
+      transform: scale(1.04) translateY(-2px);
+      box-shadow: 0 18px 44px rgba(0,0,0,.22);
+    }
+
+    #uf-achievement-hero .uf-gallery:hover .uf-track{
+      animation-play-state: paused;
+    }
+
+    @keyframes ufMarquee{
+      from{ transform: translateX(0); }
+      to{ transform: translateX(-50%); }
+    }
+
+    /* MODAL viewer */
+    #uf-achievement-hero .uf-modal{
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: clamp(14px, 3vw, 26px);
+      background: rgba(0,0,0,.72);
+      backdrop-filter: blur(4px);
+    }
+    #uf-achievement-hero .uf-modal.is-open{ display: flex; }
+
+    #uf-achievement-hero .uf-modal-panel{
+      position: relative;
+      width: min(980px, 96vw);
+      max-height: 86vh;
+      border-radius: 18px;
+      overflow: hidden;
+      box-shadow: 0 30px 90px rgba(0,0,0,.45);
+      background: rgba(255,255,255,.06);
+    }
+
+    #uf-achievement-hero .uf-modal-img{
+      width: 100%;
+      max-height: 86vh;
+      object-fit: contain;
+      display: block;
+      background: rgba(0,0,0,.25);
+    }
+
+    #uf-achievement-hero .uf-close{
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      width: 44px;
+      height: 44px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,.28);
+      background: rgba(0,0,0,.45);
+      color: #fff;
+      display: grid;
+      place-items: center;
+      cursor: pointer;
+      font-size: 20px;
+      line-height: 1;
+      box-shadow: 0 10px 24px rgba(0,0,0,.28);
+      transition: transform .18s ease, background .18s ease;
+    }
+
+    #uf-achievement-hero .uf-close:hover{
+      transform: scale(1.05);
+      background: rgba(0,0,0,.62);
+    }
+
+    /* Better small devices */
+    @media (max-width: 520px){
+      #uf-achievement-hero{ padding: 54px 12px; }
+      #uf-achievement-hero .uf-header{ margin-bottom: 14px; }
+      #uf-achievement-hero .uf-track{
+        padding: 12px;
+        animation-duration: 34s;
+        gap: 12px;
+      }
+      #uf-achievement-hero .uf-set{ gap: 12px; }
+      #uf-achievement-hero .uf-img{
+        width: 190px;
+        height: 135px;
+        border-radius: 14px;
+      }
+      #uf-achievement-hero .uf-close{
+        width: 42px;
+        height: 42px;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce){
+      #uf-achievement-hero .uf-track{ animation: none !important; }
+      #uf-achievement-hero .uf-img,
+      #uf-achievement-hero .uf-img:hover{ transition: none !important; transform: none !important; }
+      #uf-achievement-hero.uf-reveal-on .uf-reveal{
+        opacity: 1 !important;
+        transform: none !important;
+        transition: none !important;
+      }
+    }
+  </style>
+
+  <div class="uf-wrap">
+    <header class="uf-header uf-reveal">
+      <span class="uf-eyebrow uf-reveal">Milestone</span>
+      <h2 class="uf-title uf-reveal">OUR ACHIEVEMENT</h2>
+
+      <!-- ONE continuous paragraph, no extra spacing elements -->
+      <p class="uf-subtitle uf-reveal">
+        We are pleased to share that our <strong>first UnnatFarm Centre</strong> has been successfully inaugurated at
+        <strong>Maa Chandka FPCL, Chaygaon</strong>, in the presence of Directors and farmer members. During the inauguration,
+        participants were oriented about the objectives and the future roadmap of this new initiative by
+        <strong>Ayanant Ventures Private Limited</strong>. We are planning to establish <strong>more UnnatFarm Centres in January</strong>,
+        and we look forward to everyone’s continued cooperation and support as we expand this village-level model.
+      </p>
+    </header>
+    <br><br>
+    <!-- Blended Auto Slider -->
+    <div class="uf-gallery uf-reveal" aria-label="Our Achievement gallery">
+      <div class="uf-track">
+        <!-- Set A -->
+        <div class="uf-set" aria-hidden="false">
+          <img class="uf-img" src="static/unnat/unnat1.jpg" alt="Achievement image 1">
+          <img class="uf-img" src="static/unnat/unnat2.jpg" alt="Achievement image 2">
+          <img class="uf-img" src="static/unnat/unnat3.jpg" alt="Achievement image 3">
+          <img class="uf-img" src="static/unnat/unnat4.jpg" alt="Achievement image 4">
+          <img class="uf-img" src="static/unnat/unnat5.jpg" alt="Achievement image 5">
+          <img class="uf-img" src="static/unnat/unnat6.jpg" alt="Achievement image 6">
+          <img class="uf-img" src="static/unnat/unnat7.jpg" alt="Achievement image 7">
+          <img class="uf-img" src="static/unnat/unnat8.jpg" alt="Achievement image 8">
+          <img class="uf-img" src="static/unnat/unnat9.jpg" alt="Achievement image 9">
+          <img class="uf-img" src="static/unnat/unnat10.jpg" alt="Achievement image 10">
+        </div>
+
+        <!-- Set B -->
+        <div class="uf-set" aria-hidden="true">
+          <img class="uf-img" src="static/unnat/unnat1.jpg" alt="">
+          <img class="uf-img" src="static/unnat/unnat2.jpg" alt="">
+          <img class="uf-img" src="static/unnat/unnat3.jpg" alt="">
+          <img class="uf-img" src="static/unnat/unnat4.jpg" alt="">
+          <img class="uf-img" src="static/unnat/unnat5.jpg" alt="">
+          <img class="uf-img" src="static/unnat/unnat6.jpg" alt="">
+          <img class="uf-img" src="static/unnat/unnat7.jpg" alt="">
+          <img class="uf-img" src="static/unnat/unnat8.jpg" alt="">
+          <img class="uf-img" src="static/unnat/unnat9.jpg" alt="">
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal (image viewer) -->
+  <div class="uf-modal" aria-hidden="true">
+    <div class="uf-modal-panel" role="dialog" aria-modal="true" aria-label="Image viewer">
+      <button class="uf-close" type="button" aria-label="Close">✕</button>
+      <img class="uf-modal-img" src="" alt="Expanded image">
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      const root = document.getElementById('uf-achievement-hero');
+      if (!root) return;
+
+      /* ---------- Scroll reveal ---------- */
+      root.classList.add('uf-reveal-on');
+      const reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+      if (reduce) {
+        root.classList.add('in-view');
+      } else {
+        const io = new IntersectionObserver((entries) => {
+          entries.forEach(e => {
+            if (e.isIntersecting) {
+              root.classList.add('in-view');
+              io.disconnect();
+            }
+          });
+        }, { threshold: 0.18, rootMargin: "0px 0px -8% 0px" });
+        io.observe(root);
+      }
+
+      /* ---------- Modal viewer (NO JUMP) ---------- */
+      const modal = root.querySelector('.uf-modal');
+      const modalImg = root.querySelector('.uf-modal-img');
+      const closeBtn = root.querySelector('.uf-close');
+      const panel = root.querySelector('.uf-modal-panel');
+
+      let lastScrollY = 0;
+
+      function lockScroll() {
+        lastScrollY = window.scrollY || window.pageYOffset || 0;
+        document.body.style.position = 'fixed';
+        document.body.style.top = `-${lastScrollY}px`;
+        document.body.style.left = '0';
+        document.body.style.right = '0';
+        document.body.style.width = '100%';
+      }
+
+      function unlockScroll() {
+        const top = document.body.style.top;
+        document.body.style.position = '';
+        document.body.style.top = '';
+        document.body.style.left = '';
+        document.body.style.right = '';
+        document.body.style.width = '';
+        const y = top ? Math.abs(parseInt(top, 10)) : lastScrollY;
+        window.scrollTo(0, y);
+      }
+
+      function openModal(src, alt) {
+        modalImg.src = src;
+        modalImg.alt = alt || "Expanded image";
+        modal.classList.add('is-open');
+        modal.setAttribute('aria-hidden', 'false');
+        lockScroll();
+      }
+
+      function closeModal() {
+        modal.classList.remove('is-open');
+        modal.setAttribute('aria-hidden', 'true');
+        modalImg.src = '';
+        unlockScroll();
+      }
+
+      root.querySelectorAll('.uf-img').forEach(img => {
+        img.addEventListener('click', () => openModal(img.getAttribute('src'), img.getAttribute('alt')));
+        img.setAttribute('tabindex', '0');
+        img.setAttribute('role', 'button');
+        img.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            openModal(img.getAttribute('src'), img.getAttribute('alt'));
+          }
+        });
+      });
+
+      closeBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        closeModal();
+      });
+
+      modal.addEventListener('click', (e) => {
+        if (!panel.contains(e.target)) closeModal();
+      });
+
+      window.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && modal.classList.contains('is-open')) closeModal();
+      });
+    })();
+  </script>
+</section>
+
+
+
+  
+
 
 
 <!-- Problem Statement -->
