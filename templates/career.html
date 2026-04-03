@@ -74,6 +74,14 @@
   .textarea{min-height:110px; resize:vertical}
   .form .actions{display:flex; gap:10px; flex-wrap:wrap}
 
+  /* Flash messages for application status */
+  .flash-wrap{display:grid; gap:10px; margin:14px 0 18px}
+  .flash-msg{padding:12px 14px; border-radius:12px; font-size:14px; font-weight:700; border:1px solid transparent}
+  .flash-success{background:rgba(14,122,97,.10); color:var(--green); border-color:rgba(14,122,97,.20)}
+  .flash-error,.flash-danger{background:rgba(179,63,54,.10); color:var(--red); border-color:rgba(179,63,54,.20)}
+  .flash-warning{background:rgba(255,196,0,.14); color:#8a6a00; border-color:rgba(255,196,0,.24)}
+  .field-note{font-size:12px; color:var(--muted); margin-top:6px}
+
   /* ---- Extra small refinements for long values on mobile ---- */
   .input::placeholder,
   .textarea::placeholder{color:rgba(0,0,0,.45)}
@@ -198,18 +206,37 @@
     <div class="wrap">
       <header class="cr-reveal">
         <h2>Open Roles</h2>
-        <p class="career-sub">We’re not hiring for new positions right now. You can still send us your resume—when a role opens that fits, we’ll reach out.</p>
+        <p class="career-sub">
+We are currently hiring! Explore our open position below and apply to join the Ayanant team.
+</p>
       </header>
 
-      <div class="empty cr-reveal">
-        <div class="kicker">No Openings</div>
-        <h3 style="margin:0">There are no roles available at the moment.</h3>
-        <p>We update this page as soon as positions open. In the meantime, share your CV and portfolio so we can keep you in mind.</p>
-        <div class="row">
-          <a class="btn" href="#apply">Send Resume</a>
-          <a class="btn secondary" href="info@ayanant.com?subject=General%20Application&body=Please%20attach%20your%20CV%20and%20portfolio%20links.">Email Us</a>
-        </div>
+<div class="post cr-reveal" style="margin-bottom:20px;">
+  
+  <div style="display:grid; gap:14px;">
+
+    
+
+    <div>
+      <div class="kicker">Now Hiring</div>
+      <h3>Accounts Assistant</h3>
+      <p><strong>Location:</strong> Dharapur, Guwahati</p>
+
+      <ul style="margin:10px 0 0 16px; color:#555; font-size:14px;">
+        <li>B.Com Graduate (Freshers can apply)</li>
+        <li>1+ Year Experience Preferred</li>
+        <li>Salary as per industry standards</li>
+      </ul>
+
+      <div style="margin-top:14px; display:flex; gap:10px; flex-wrap:wrap;">
+        <a class="btn" href="#apply">Apply Now</a>
+        
       </div>
+    </div>
+
+  </div>
+
+</div>
     </div>
   </section>
 
@@ -219,7 +246,17 @@
       <h2 class="cr-reveal">Share Your Resume</h2>
       <p class="career-sub cr-reveal">Tell us about you. We’ll review and get in touch when we find a match.</p>
 
-      <form class="form cr-reveal" method="post" action="/apply" enctype="multipart/form-data">
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+          <div class="flash-wrap cr-reveal">
+            {% for category, message in messages %}
+              <div class="flash-msg flash-{{ category }}">{{ message }}</div>
+            {% endfor %}
+          </div>
+        {% endif %}
+      {% endwith %}
+
+      <form class="form cr-reveal" method="post" action="{{ url_for('apply') }}" enctype="multipart/form-data">
         <div class="grid">
           <div class="field">
             <label class="label" for="full_name">Full Name</label>
@@ -266,7 +303,8 @@
         <div class="grid">
           <div class="field">
             <label class="label" for="resume">Resume (PDF)</label>
-            <input class="file" type="file" id="resume" name="resume" accept=".pdf" required>
+            <input class="file" type="file" id="resume" name="resume" accept=".pdf,application/pdf" required>
+            <div class="field-note">Upload PDF format only.</div>
           </div>
           <div class="field">
             <label class="label" for="role_interest">Role Interest (optional)</label>

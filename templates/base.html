@@ -242,6 +242,7 @@
 
         <a class="mnav-link" href="/about">WHO WE ARE</a>
         <a class="mnav-link" href="/team">THE SQUAD</a>
+        <a class="mnav-link" href="/career">CAREERS</a>
 
         <!-- OUR BRANDS with mobile subitems -->
         <a class="mnav-link tog" href="javascript:void(0)" data-target="mbrands">OUR BRANDS <span class="mc">▾</span></a>
@@ -275,6 +276,7 @@
 
       <a class="nav-link" href="/about">WHO WE&nbsp;ARE</a>
       <a class="nav-link" href="/team">THE SQUAD</a>
+      <a class="nav-link" href="/career">CAREERS</a>
     </nav>
 
 <div class="brand" id="brand" aria-label="Brand">
@@ -316,10 +318,10 @@
   <footer class="footer" id="contact">
     <div class="footer-top">
       <div class="f-logo">
-        <img src="static/ayanant_logo.png" alt="Footer logo">
+        <img src="{{ url_for('static', filename='ayanant_logo.png') }}" alt="Footer logo">
         <!-- NEW: Company address -->
         <address class="f-address">
-          Ayanant Pvt. Ltd.<br>
+          Ayanant Ventures Pvt. Ltd.<br>
           House No.02, 2nd Floor,
           Bishnnujyoti Nagar Dharapur,
           Guwahati, Assam-781017
@@ -331,6 +333,7 @@
         <ul class="f-list">
           <li><a href="/home">HOME</a></li>
           <li><a href="/about">ABOUT US</a></li>
+          <a href="{{ url_for('admin_login') }}">CONSOLE</a>
           <li><a href="#">NE-LOCALS PRODUCTS</a></li>
           <li><a href="#">NE-FRESH PRODUCTS</a></li>
           <li><a href="/contact">GET IN TOUCH</a></li>
@@ -349,17 +352,17 @@
         <h4>OUR SOCIALS</h4>
         <div class="socials">
           <!-- Instagram -->
-          <a href="https://instagram.com" aria-label="Instagram">
+          <a href="https://www.instagram.com/nelocals?igsh=dWFodGVnZWltZXE2" aria-label="Instagram">
             <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
               <path d="M12 2.2c3.2 0 3.6 0 4.8.1 1.2.1 1.9.3 2.4.6.6.3 1 .7 1.5 1.2.5.5.9.9 1.2 1.5.3.5.5 1.2.6 2.4.1 1.2.1 1.6.1 4.8s0 3.6-.1 4.8c-.1 1.2-.3 1.9-.6 2.4-.3.6-.7 1-1.2 1.5-.5.5-.9.9-1.5 1.2-.5.3-1.2.5-2.4.6-1.2.1-1.6.1-4.8.1s-3.5 0-4.7-.1c-1 0-1.6-.2-2-.4-.5-.2-.8-.4-1.2-.8-.4-.4-.6-.7-.8-1.2-.2-.4-.4-1-.4-2-.1-1.2-.1-1.6-.1-4.7s0-3.5.1-4.7c0-1-.2-1.6-.4-2-.2-.5-.4-.8-.8-1.2-.4-.4-.7-.6-1.2-.8-.4-.2-1-.4-2-.4-1.2-.1-1.6-.1-4.7-.1Zm0 1.8c-3.1 0-3.5 0-4.7.1-1 0-1.6.2-2 .4-.5.2-.8.4-1.2.8-.4.4-.6.7-.8 1.2-.2.4-.4 1-.4 2-.1 1.2-.1 1.6-.1 4.7s0 3.5.1 4.7c0 1 .2 1.6.4 2 .2.5.4.8.8 1.2.4.4.7.6 1.2.8.4.2 1 .4 2 .4 1.2.1 1.6.1 4.7.1s3.5 0 4.7-.1c1 0 1.6-.2 2-.4.5-.2.8-.4 1.2-.8.4-.4.6-.7.8-1.2.2-.4.4-1 .4-2 .1-1.2.1-1.6.1-4.7s0-3.5-.1-4.7c0-1-.2-1.6-.4-2-.2-.5-.4-.8-.8-1.2-.4-.4-.7-.6-1.2-.8-.4-.2-1-.4-2-.4-1.2-.1-1.6-.1-4.7-.1Zm0 3.1a5.9 5.9 0 1 1 0 11.8 5.9 5.9 0 0 1 0-11.8Zm0 1.8a4.1 4.1 0 1 0 0 8.2 4.1 4.1 0 0 0 0-8.2Zm5.9-2.2a1.4 1.4 0 1 1 0 2.8 1.4 1.4 0 0 1 0-2.8Z" fill="currentColor"/>
             </svg>
           </a>
           <!-- Facebook -->
-          <a href="https://facebook.com" aria-label="Facebook">
+          <a href="https://www.facebook.com/share/1GTk5w8k54/" aria-label="Facebook">
             <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M22 12a10 10 0 1 0-11.5 9.9v-7h-2v-3h2v-2.3c0-2 1.2-3.1 3-3.1.9 0 1.8.16 1.8.16v2h-1c-1 0-1.3.63-1.3 1.3V12h2.2l-.35 3h-1.85v7A10 10 0 0 0 22 12z" fill="currentColor"/></svg>
           </a>
           <!-- LinkedIn -->
-          <a href="https://linkedin.com" aria-label="LinkedIn">
+          <a href="https://www.linkedin.com/in/ayanant-ventures-private-limited-08ba023a8/" aria-label="LinkedIn">
             <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M4.98 3.5C4.98 4.88 3.86 6 2.5 6S0 4.88 0 3.5 1.12 1 2.5 1s2.48 1.12 2.48 2.5zM.5 8.5h4V23h-4V8.5zM8 8.5h3.8v2h.05C12.65 9.5 14.4 8 17.2 8 22.2 8 23 11.2 23 16v7h-4v-6.2c0-1.48-.03-3.38-2.06-3.38-2.06 0-2.38 1.6-2.38 3.27V23H10v-14.5z" fill="currentColor"/></svg>
           </a>
           <!-- X (Twitter) -->
@@ -379,7 +382,7 @@
     </div>
 
     <div class="footer-bottom">
-      <div>© 2025 – Ayanant Pvt. Ltd. All Rights Reserved</div>
+      <div>© 2026 – Ayanant Pvt. Ltd. All Rights Reserved</div>
       <div class="legal-links">
         <a href="#">Privacy Policy</a>
         <a href="#">Cookies Privacy</a>

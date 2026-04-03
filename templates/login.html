@@ -1,0 +1,309 @@
+{% extends "base.html" %}
+
+{% block title %}Ayanant Admin{% endblock %}
+
+{% block head_extra %}
+<style>
+  .admin-login-section{
+    min-height: calc(100vh - 74px);
+    background:
+      radial-gradient(circle at top left, rgba(229,35,40,.10), transparent 28%),
+      radial-gradient(circle at bottom right, rgba(13,122,97,.08), transparent 30%),
+      #f8f4ee;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:60px 20px;
+  }
+
+  .admin-login-wrap{
+    width:100%;
+    max-width:1100px;
+    display:grid;
+    grid-template-columns: 1.1fr .9fr;
+    background:#fff;
+    border:1px solid rgba(0,0,0,.08);
+    border-radius:24px;
+    overflow:hidden;
+    box-shadow:0 18px 45px rgba(0,0,0,.08);
+  }
+
+  .admin-login-left{
+    background:linear-gradient(135deg, rgba(229,35,40,.96), rgba(199,23,27,.96));
+    color:#fff;
+    padding:56px 44px;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    position:relative;
+    isolation:isolate;
+  }
+
+  .admin-login-left::before{
+    content:"";
+    position:absolute;
+    inset:0;
+    background:
+      radial-gradient(circle at 20% 20%, rgba(255,255,255,.18), transparent 22%),
+      radial-gradient(circle at 80% 70%, rgba(255,255,255,.12), transparent 28%);
+    z-index:-1;
+  }
+
+  .admin-login-kicker{
+    font-size:12px;
+    letter-spacing:.16em;
+    text-transform:uppercase;
+    font-weight:800;
+    opacity:.9;
+    margin-bottom:16px;
+  }
+
+  .admin-login-left h1{
+    margin:0 0 16px;
+    font-family:"Bebas Neue", Inter, sans-serif;
+    font-size:clamp(40px, 6vw, 72px);
+    line-height:.95;
+    letter-spacing:1px;
+  }
+
+  .admin-login-left p{
+    margin:0;
+    font-size:15px;
+    line-height:1.7;
+    color:rgba(255,255,255,.92);
+    max-width:460px;
+  }
+
+  .admin-login-points{
+    margin-top:26px;
+    display:grid;
+    gap:12px;
+  }
+
+  .admin-login-points div{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    font-weight:600;
+    font-size:14px;
+  }
+
+  .admin-login-points span{
+    width:10px;
+    height:10px;
+    border-radius:50%;
+    background:#fff;
+    flex:0 0 10px;
+  }
+
+  .admin-login-card{
+    padding:56px 40px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    background:#fff;
+  }
+
+  .admin-login-form{
+    width:100%;
+    max-width:360px;
+  }
+
+  .admin-login-form h2{
+    margin:0 0 8px;
+    color:#1c1b1a;
+    font-size:30px;
+    font-weight:800;
+  }
+
+  .admin-login-form .subtext{
+    margin:0 0 28px;
+    color:#6b6b6b;
+    font-size:14px;
+    line-height:1.6;
+  }
+
+  .form-group{
+    margin-bottom:18px;
+  }
+
+  .form-group label{
+    display:block;
+    margin-bottom:8px;
+    font-size:13px;
+    font-weight:700;
+    color:#1c1b1a;
+  }
+
+  .form-control{
+    width:100%;
+    border:1px solid #d8d2c8;
+    border-radius:14px;
+    padding:14px 15px;
+    font-size:15px;
+    outline:none;
+    background:#fff;
+    transition:border-color .2s ease, box-shadow .2s ease;
+  }
+
+  .form-control:focus{
+    border-color:#e52328;
+    box-shadow:0 0 0 4px rgba(229,35,40,.10);
+  }
+
+  .login-btn{
+    width:100%;
+    border:0;
+    border-radius:999px;
+    background:#e52328;
+    color:#fff;
+    padding:14px 18px;
+    font-size:15px;
+    font-weight:800;
+    cursor:pointer;
+    transition:transform .15s ease, background .2s ease;
+    box-shadow:0 10px 24px rgba(229,35,40,.22);
+  }
+
+  .login-btn:hover{
+    background:#c7171b;
+    transform:translateY(-1px);
+  }
+
+  .flash-messages{
+    margin-bottom:18px;
+    display:grid;
+    gap:10px;
+  }
+
+  .flash-message{
+    border-radius:12px;
+    padding:12px 14px;
+    font-size:14px;
+    font-weight:600;
+  }
+
+  .flash-error,
+  .flash-danger{
+    background:#ffe5e5;
+    color:#a11a1f;
+    border:1px solid #f3b8bb;
+  }
+
+  .flash-success{
+    background:#e7f7ef;
+    color:#0d7a61;
+    border:1px solid #b8e4d5;
+  }
+
+  .form-footer{
+    margin-top:16px;
+    text-align:center;
+    font-size:13px;
+    color:#6b6b6b;
+  }
+
+  .form-footer a{
+    color:#e52328;
+    text-decoration:none;
+    font-weight:700;
+  }
+
+  .form-footer a:hover{
+    text-decoration:underline;
+  }
+
+  @media (max-width: 900px){
+    .admin-login-wrap{
+      grid-template-columns:1fr;
+    }
+
+    .admin-login-left{
+      padding:40px 28px;
+    }
+
+    .admin-login-card{
+      padding:36px 24px 40px;
+    }
+  }
+
+  @media (max-width: 520px){
+    .admin-login-section{
+      padding:32px 14px;
+    }
+
+    .admin-login-left,
+    .admin-login-card{
+      padding:28px 18px;
+    }
+
+    .admin-login-form h2{
+      font-size:26px;
+    }
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="admin-login-section">
+  <div class="admin-login-wrap">
+
+    <div class="admin-login-left">
+      <div class="admin-login-kicker">Ayanant</div>
+      <h1>Ayanant's Admin</h1>
+
+
+    </div>
+
+    <div class="admin-login-card">
+      <form method="POST" action="{{ url_for('admin_login') }}" class="admin-login-form">
+        <h2>Welcome Back</h2>
+        <p class="subtext">Enter your admin credentials to continue.</p>
+
+        {% with messages = get_flashed_messages(with_categories=true) %}
+          {% if messages %}
+            <div class="flash-messages">
+              {% for category, message in messages %}
+                <div class="flash-message flash-{{ category }}">
+                  {{ message }}
+                </div>
+              {% endfor %}
+            </div>
+          {% endif %}
+        {% endwith %}
+
+        <div class="form-group">
+          <label for="username">Username</label>
+          <input
+            type="text"
+            id="username"
+            name="username"
+            class="form-control"
+            placeholder="Enter username"
+            required
+          >
+        </div>
+
+        <div class="form-group">
+          <label for="password">Password</label>
+          <input
+            type="password"
+            id="password"
+            name="password"
+            class="form-control"
+            placeholder="Enter password"
+            required
+          >
+        </div>
+
+        <button type="submit" class="login-btn">Login</button>
+
+        <div class="form-footer">
+          <a href="{{ url_for('home') }}">← Back to Home</a>
+        </div>
+      </form>
+    </div>
+
+  </div>
+</section>
+{% endblock %}
