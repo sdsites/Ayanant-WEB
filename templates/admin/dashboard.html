@@ -1,243 +1,836 @@
 {% extends "base.html" %}
 
-{% block title %}Admin Dashboard{% endblock %}
-
-{% block head_extra %}
-<style>
-  .admin-container {
-    padding: 40px 20px;
-    max-width: 1600px;
-    margin: auto;
-  }
-
-  .admin-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 25px;
-    gap: 16px;
-    flex-wrap: wrap;
-  }
-
-  .admin-header h2 {
-    font-size: 26px;
-    font-weight: 800;
-    margin: 0;
-  }
-
-  .logout-btn {
-    padding: 8px 14px;
-    background: #e52328;
-    color: white;
-    border-radius: 6px;
-    text-decoration: none;
-    font-size: 13px;
-    font-weight: 600;
-  }
-
-  .table-wrapper {
-    overflow-x: auto;
-    background: #fff;
-    border-radius: 12px;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.08);
-  }
-
-  table {
-    width: 100%;
-    min-width: 1500px;
-    border-collapse: collapse;
-  }
-
-  th, td {
-    padding: 14px;
-    text-align: left;
-    font-size: 14px;
-    vertical-align: top;
-  }
-
-  th {
-    background: #0f172a;
-    color: white;
-    white-space: nowrap;
-  }
-
-  tr:nth-child(even) {
-    background: #f8fafc;
-  }
-
-  td {
-    color: #1e293b;
-  }
-
-  .status {
-    display: inline-block;
-    padding: 4px 10px;
-    border-radius: 20px;
-    font-size: 12px;
-    font-weight: bold;
-    text-transform: capitalize;
-    white-space: nowrap;
-  }
-
-  .new {
-    background: #e0f2fe;
-    color: #0369a1;
-  }
-
-  .shortlisted {
-    background: #dcfce7;
-    color: #166534;
-  }
-
-  .rejected {
-    background: #fee2e2;
-    color: #991b1b;
-  }
-
-  .reviewed {
-    background: #fef3c7;
-    color: #92400e;
-  }
-
-  .action-group {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 6px;
-  }
-
-  .action-btn {
-    display: inline-block;
-    padding: 6px 10px;
-    font-size: 12px;
-    border-radius: 5px;
-    text-decoration: none;
-    color: white;
-    white-space: nowrap;
-    font-weight: 600;
-  }
-
-  .view { background: #3b82f6; }
-  .shortlist { background: #22c55e; }
-  .reject { background: #ef4444; }
-  .review { background: #f59e0b; }
-
-  .empty-text {
-    color: #94a3b8;
-    font-style: italic;
-  }
-
-  .about-cell {
-    min-width: 220px;
-    max-width: 320px;
-    white-space: normal;
-    line-height: 1.5;
-  }
-
-  .portfolio-link {
-    color: #2563eb;
-    text-decoration: none;
-    word-break: break-word;
-  }
-
-  .portfolio-link:hover {
-    text-decoration: underline;
-  }
-</style>
-{% endblock %}
+{% block title %}Admin Dashboard | Ayanant{% endblock %}
 
 {% block content %}
-<div class="admin-container">
+<style>
+    .admin-page {
+        min-height: calc(100vh - var(--nav-height));
+        background:
+            radial-gradient(circle at top left, rgba(229, 35, 40, 0.08), transparent 34%),
+            radial-gradient(circle at bottom right, rgba(13, 122, 97, 0.08), transparent 32%),
+            var(--cream);
+        padding: 120px 18px 70px;
+        color: var(--ink);
+    }
 
-  <div class="admin-header">
-    <h2>📄 Resume Dashboard</h2>
-    <a href="{{ url_for('admin_logout') }}" class="logout-btn">Logout</a>
-  </div>
+    .admin-shell {
+        width: min(1320px, 100%);
+        margin: 0 auto;
+    }
 
-  <div class="table-wrapper">
-    <table>
-      <thead>
-        <tr>
-          <th>Name</th>
-          <th>Email</th>
-          <th>Phone</th>
-          <th>Portfolio / LinkedIn</th>
-          <th>Address</th>
-          <th>City</th>
-          <th>State</th>
-          <th>Pincode</th>
-          <th>About</th>
-          <th>Role Interest</th>
-          <th>Resume</th>
-          <th>Status</th>
-          <th>Actions</th>
-        </tr>
-      </thead>
+    .admin-top {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 18px;
+        margin-bottom: 24px;
+    }
 
-      <tbody>
-        {% for app in applications %}
-        <tr>
-          <td>{{ app.full_name or '-' }}</td>
-          <td>{{ app.email or '-' }}</td>
-          <td>{{ app.phone or '-' }}</td>
+    .admin-kicker {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 14px;
+        border: 1px solid rgba(229, 35, 40, 0.18);
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.62);
+        color: var(--red);
+        font-size: 12px;
+        font-weight: 900;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+        margin-bottom: 12px;
+    }
 
-          <td>
-            {% if app.portfolio %}
-              <a href="{{ app.portfolio }}" target="_blank" class="portfolio-link">{{ app.portfolio }}</a>
-            {% else %}
-              <span class="empty-text">-</span>
-            {% endif %}
-          </td>
+    .admin-title {
+        font-family: "Bebas Neue", Impact, sans-serif;
+        font-size: clamp(42px, 7vw, 86px);
+        line-height: 0.9;
+        letter-spacing: 0.02em;
+        margin: 0;
+        text-transform: uppercase;
+    }
 
-          <td>{{ app.address or '-' }}</td>
-          <td>{{ app.city or '-' }}</td>
-          <td>{{ app.state or '-' }}</td>
-          <td>{{ app.pincode or '-' }}</td>
+    .admin-subtitle {
+        max-width: 780px;
+        margin: 12px 0 0;
+        color: var(--muted);
+        font-size: 15px;
+        line-height: 1.75;
+    }
 
-          <td class="about-cell">
-            {% if app.about %}
-              {{ app.about }}
-            {% else %}
-              <span class="empty-text">-</span>
-            {% endif %}
-          </td>
+    .admin-top-actions {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        justify-content: flex-end;
+    }
 
-          <td>{{ app.role_interest or '-' }}</td>
+    .admin-btn {
+        min-height: 44px;
+        padding: 0 17px;
+        border-radius: 999px;
+        border: 1px solid rgba(28, 27, 26, 0.12);
+        background: #fff;
+        color: var(--ink);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 12px;
+        font-weight: 950;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        text-decoration: none;
+        cursor: pointer;
+        box-shadow: var(--shadow);
+        transition: transform 0.2s ease, background 0.2s ease, color 0.2s ease;
+        white-space: nowrap;
+    }
 
-          <td>
-            {% if app.resume_filename %}
-              <a href="{{ url_for('view_resume', filename=app.resume_filename) }}" target="_blank" class="action-btn view">
-                View
-              </a>
-            {% else %}
-              <span class="empty-text">No Resume</span>
-            {% endif %}
-          </td>
+    .admin-btn:hover {
+        transform: translateY(-2px);
+        background: var(--ink);
+        color: #fff;
+    }
 
-          <td>
-            <span class="status {{ app.status|lower }}">
-              {{ app.status }}
-            </span>
-          </td>
+    .admin-btn.primary {
+        background: var(--red);
+        color: #fff;
+        border-color: var(--red);
+        box-shadow: 0 16px 36px rgba(229, 35, 40, 0.2);
+    }
 
-          <td>
-            <div class="action-group">
-              <a href="{{ url_for('shortlist_application', id=app.id) }}" class="action-btn shortlist">Shortlist</a>
-              <a href="{{ url_for('reject_application', id=app.id) }}" class="action-btn reject">Reject</a>
-              <a href="{{ url_for('review_application', id=app.id) }}" class="action-btn review">Review</a>
+    .admin-btn.primary:hover {
+        background: var(--red-pressed);
+        color: #fff;
+    }
+
+    .admin-section {
+        background: rgba(255, 255, 255, 0.88);
+        border: 1px solid rgba(28, 27, 26, 0.1);
+        border-radius: 30px;
+        box-shadow: 0 24px 80px rgba(28, 27, 26, 0.1);
+        overflow: hidden;
+        margin-top: 22px;
+    }
+
+    .admin-section-head {
+        padding: 24px 26px;
+        background:
+            linear-gradient(135deg, rgba(28, 27, 26, 0.96), rgba(28, 27, 26, 0.86)),
+            radial-gradient(circle at top right, rgba(229, 35, 40, 0.25), transparent 35%);
+        color: #fff;
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 16px;
+    }
+
+    .admin-section-head h2 {
+        font-family: "Bebas Neue", Impact, sans-serif;
+        font-size: clamp(30px, 4vw, 52px);
+        letter-spacing: 0.03em;
+        line-height: 0.95;
+        text-transform: uppercase;
+        margin: 0;
+    }
+
+    .admin-section-head p {
+        margin: 8px 0 0;
+        max-width: 720px;
+        color: rgba(255, 255, 255, 0.76);
+        font-size: 14px;
+        line-height: 1.65;
+    }
+
+    .admin-section-body {
+        padding: 22px;
+    }
+
+    .job-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 16px;
+    }
+
+    .job-card {
+        border: 1px solid rgba(28, 27, 26, 0.1);
+        background:
+            linear-gradient(180deg, rgba(255, 255, 255, 0.94), rgba(255, 255, 255, 0.78));
+        border-radius: 24px;
+        padding: 20px;
+        box-shadow: 0 14px 34px rgba(28, 27, 26, 0.07);
+    }
+
+    .job-card-top {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 12px;
+        margin-bottom: 12px;
+    }
+
+    .job-card h3 {
+        margin: 0;
+        font-family: "Bebas Neue", Impact, sans-serif;
+        font-size: 34px;
+        line-height: 0.95;
+        letter-spacing: 0.03em;
+        text-transform: uppercase;
+    }
+
+    .job-status {
+        flex: 0 0 auto;
+        border-radius: 999px;
+        padding: 7px 11px;
+        font-size: 11px;
+        font-weight: 950;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+    }
+
+    .job-status.open {
+        background: rgba(13, 122, 97, 0.1);
+        color: var(--green);
+        border: 1px solid rgba(13, 122, 97, 0.18);
+    }
+
+    .job-status.closed {
+        background: rgba(107, 107, 107, 0.12);
+        color: #555;
+        border: 1px solid rgba(107, 107, 107, 0.18);
+    }
+
+    .job-meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin: 12px 0;
+    }
+
+    .job-meta span {
+        border-radius: 999px;
+        padding: 7px 10px;
+        background: rgba(244, 237, 228, 0.9);
+        border: 1px solid rgba(28, 27, 26, 0.08);
+        color: var(--muted);
+        font-size: 12px;
+        font-weight: 800;
+    }
+
+    .job-text {
+        color: var(--muted);
+        font-size: 14px;
+        line-height: 1.72;
+        margin: 10px 0 0;
+        white-space: pre-line;
+    }
+
+    .job-actions {
+        display: flex;
+        gap: 9px;
+        flex-wrap: wrap;
+        margin-top: 16px;
+    }
+
+    .mini-btn {
+        min-height: 38px;
+        padding: 0 13px;
+        border-radius: 999px;
+        border: 1px solid rgba(28, 27, 26, 0.12);
+        background: #fff;
+        color: var(--ink);
+        font-size: 11px;
+        font-weight: 950;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: transform 0.2s ease, background 0.2s ease, color 0.2s ease;
+    }
+
+    .mini-btn:hover {
+        transform: translateY(-2px);
+        background: var(--ink);
+        color: #fff;
+    }
+
+    .mini-btn.red {
+        background: var(--red);
+        color: #fff;
+        border-color: var(--red);
+    }
+
+    .mini-btn.red:hover {
+        background: var(--red-pressed);
+    }
+
+    .mini-btn.green {
+        background: var(--green);
+        color: #fff;
+        border-color: var(--green);
+    }
+
+    .mini-btn.green:hover {
+        background: #075f4b;
+    }
+
+    .mini-btn.danger {
+        background: #fff;
+        color: var(--red);
+        border-color: rgba(229, 35, 40, 0.28);
+    }
+
+    .mini-btn.danger:hover {
+        background: var(--red);
+        color: #fff;
+    }
+
+    .empty-state {
+        border: 1px dashed rgba(28, 27, 26, 0.18);
+        border-radius: 24px;
+        background: rgba(255, 255, 255, 0.62);
+        padding: 28px;
+        text-align: center;
+        color: var(--muted);
+    }
+
+    .empty-state h3 {
+        font-family: "Bebas Neue", Impact, sans-serif;
+        font-size: 36px;
+        line-height: 0.95;
+        margin: 0 0 8px;
+        color: var(--ink);
+        text-transform: uppercase;
+    }
+
+    .filter-row {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        margin-bottom: 18px;
+    }
+
+    .filter-pill {
+        min-height: 38px;
+        padding: 0 14px;
+        border-radius: 999px;
+        border: 1px solid rgba(28, 27, 26, 0.12);
+        background: #fff;
+        color: var(--ink);
+        font-size: 11px;
+        font-weight: 950;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .filter-pill.active,
+    .filter-pill:hover {
+        background: var(--red);
+        border-color: var(--red);
+        color: #fff;
+    }
+
+    .table-wrap {
+        width: 100%;
+        overflow-x: auto;
+        border-radius: 22px;
+        border: 1px solid rgba(28, 27, 26, 0.1);
+        background: #fff;
+    }
+
+    .admin-table {
+        width: 100%;
+        border-collapse: collapse;
+        min-width: 1180px;
+        background: #fff;
+    }
+
+    .admin-table th,
+    .admin-table td {
+        padding: 14px 13px;
+        border-bottom: 1px solid rgba(28, 27, 26, 0.08);
+        text-align: left;
+        vertical-align: top;
+        font-size: 13px;
+        line-height: 1.55;
+    }
+
+    .admin-table th {
+        background: rgba(244, 237, 228, 0.78);
+        color: var(--ink);
+        font-size: 11px;
+        font-weight: 950;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        white-space: nowrap;
+    }
+
+    .admin-table tr:last-child td {
+        border-bottom: 0;
+    }
+
+    .candidate-name {
+        color: var(--ink);
+        font-weight: 950;
+    }
+
+    .candidate-small {
+        display: block;
+        color: var(--muted);
+        font-size: 12px;
+        margin-top: 4px;
+    }
+
+    .status-badge {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 999px;
+        padding: 7px 10px;
+        font-size: 11px;
+        font-weight: 950;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        white-space: nowrap;
+    }
+
+    .status-new {
+        background: rgba(238, 162, 34, 0.13);
+        color: #a86c08;
+        border: 1px solid rgba(238, 162, 34, 0.22);
+    }
+
+    .status-shortlisted {
+        background: rgba(13, 122, 97, 0.1);
+        color: var(--green);
+        border: 1px solid rgba(13, 122, 97, 0.2);
+    }
+
+    .status-rejected {
+        background: rgba(229, 35, 40, 0.1);
+        color: var(--red);
+        border: 1px solid rgba(229, 35, 40, 0.22);
+    }
+
+    .status-reviewed {
+        background: rgba(28, 27, 26, 0.08);
+        color: var(--ink);
+        border: 1px solid rgba(28, 27, 26, 0.12);
+    }
+
+    .candidate-actions {
+        display: flex;
+        gap: 7px;
+        flex-wrap: wrap;
+    }
+
+    .mobile-applications {
+        display: none;
+    }
+
+    .mobile-app-card {
+        border: 1px solid rgba(28, 27, 26, 0.1);
+        border-radius: 22px;
+        padding: 18px;
+        background: #fff;
+        box-shadow: 0 12px 28px rgba(28, 27, 26, 0.06);
+    }
+
+    .mobile-app-card + .mobile-app-card {
+        margin-top: 14px;
+    }
+
+    .mobile-app-card h3 {
+        margin: 0;
+        font-family: "Bebas Neue", Impact, sans-serif;
+        font-size: 32px;
+        letter-spacing: 0.03em;
+        text-transform: uppercase;
+    }
+
+    .mobile-info {
+        margin-top: 10px;
+        color: var(--muted);
+        font-size: 13px;
+        line-height: 1.65;
+    }
+
+    .mobile-info strong {
+        color: var(--ink);
+    }
+
+    @media (max-width: 900px) {
+        .admin-top,
+        .admin-section-head {
+            flex-direction: column;
+        }
+
+        .admin-top-actions,
+        .admin-section-head .admin-btn {
+            width: 100%;
+        }
+
+        .admin-btn {
+            width: 100%;
+        }
+
+        .job-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    @media (max-width: 760px) {
+        .admin-page {
+            padding: 100px 14px 46px;
+        }
+
+        .admin-section {
+            border-radius: 24px;
+        }
+
+        .admin-section-head,
+        .admin-section-body {
+            padding: 20px 16px;
+        }
+
+        .table-wrap {
+            display: none;
+        }
+
+        .mobile-applications {
+            display: block;
+        }
+
+        .filter-row {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+
+        .filter-pill {
+            width: 100%;
+        }
+
+        .job-card h3 {
+            font-size: 30px;
+        }
+
+        .job-actions,
+        .candidate-actions {
+            flex-direction: column;
+        }
+
+        .mini-btn {
+            width: 100%;
+        }
+    }
+</style>
+
+<main class="admin-page">
+    <div class="admin-shell">
+        <div class="admin-top">
+            <div>
+                <div class="admin-kicker">Ayanant Admin Panel</div>
+                <h1 class="admin-title">Hiring Dashboard</h1>
+                <p class="admin-subtitle">
+                    Manage career openings posted on the website and review candidate applications submitted from the Careers page.
+                </p>
             </div>
-          </td>
-        </tr>
-        {% else %}
-        <tr>
-          <td colspan="13" style="text-align:center; padding:20px;">
-            No applications found.
-          </td>
-        </tr>
-        {% endfor %}
-      </tbody>
 
-    </table>
-  </div>
+            <div class="admin-top-actions">
+                <a class="admin-btn primary" href="{{ url_for('create_job_opening') }}">
+                    Post New Job
+                </a>
+                <a class="admin-btn" href="{{ url_for('career') }}" target="_blank">
+                    View Careers Page
+                </a>
+                <a class="admin-btn" href="{{ url_for('admin_logout') }}">
+                    Logout
+                </a>
+            </div>
+        </div>
 
-</div>
+        <section class="admin-section" id="job-openings">
+            <div class="admin-section-head">
+                <div>
+                    <h2>Job Openings</h2>
+                    <p>
+                        Only jobs posted here with open status will appear on the public Careers page.
+                    </p>
+                </div>
+
+                <a class="admin-btn primary" href="{{ url_for('create_job_opening') }}">
+                    Add Opening
+                </a>
+            </div>
+
+            <div class="admin-section-body">
+                {% if job_openings %}
+                    <div class="job-grid">
+                        {% for job in job_openings %}
+                            <article class="job-card">
+                                <div class="job-card-top">
+                                    <h3>{{ job.title }}</h3>
+                                    <span class="job-status {{ job.status }}">
+                                        {{ job.status }}
+                                    </span>
+                                </div>
+
+                                <div class="job-meta">
+                                    {% if job.department %}
+                                        <span>{{ job.department }}</span>
+                                    {% endif %}
+                                    {% if job.location %}
+                                        <span>{{ job.location }}</span>
+                                    {% endif %}
+                                    {% if job.employment_type %}
+                                        <span>{{ job.employment_type }}</span>
+                                    {% endif %}
+                                </div>
+
+                                {% if job.description %}
+                                    <p class="job-text">{{ job.description }}</p>
+                                {% endif %}
+
+                                {% if job.requirements %}
+                                    <p class="job-text"><strong>Requirements:</strong><br>{{ job.requirements }}</p>
+                                {% endif %}
+
+                                <div class="job-actions">
+                                    {% if job.status == "open" %}
+                                        <a class="mini-btn red" href="{{ url_for('close_job_opening', id=job.id) }}">
+                                            Close
+                                        </a>
+                                    {% else %}
+                                        <a class="mini-btn green" href="{{ url_for('reopen_job_opening', id=job.id) }}">
+                                            Reopen
+                                        </a>
+                                    {% endif %}
+
+                                    <form
+                                        method="POST"
+                                        action="{{ url_for('delete_job_opening', id=job.id) }}"
+                                        onsubmit="return confirm('Are you sure you want to delete this job opening? Applications already submitted for this job will remain in the dashboard, but this opening will be removed.');"
+                                    >
+                                        <button class="mini-btn danger" type="submit">
+                                            Delete
+                                        </button>
+                                    </form>
+                                </div>
+                            </article>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="empty-state">
+                        <h3>No Job Openings Yet</h3>
+                        <p>
+                            Post your first job opening from the admin panel. Once published, it will automatically appear on the Careers page.
+                        </p>
+                    </div>
+                {% endif %}
+            </div>
+        </section>
+
+        <section class="admin-section" id="applications">
+            <div class="admin-section-head">
+                <div>
+                    <h2>Candidate Applications</h2>
+                    <p>
+                        Review applications submitted by candidates against active job openings.
+                    </p>
+                </div>
+            </div>
+
+            <div class="admin-section-body">
+                <div class="filter-row">
+                    <a class="filter-pill {% if not status_filter %}active{% endif %}" href="{{ url_for('admin_dashboard') }}#applications">
+                        All
+                    </a>
+                    <a class="filter-pill {% if status_filter == 'new' %}active{% endif %}" href="{{ url_for('admin_dashboard', status='new') }}#applications">
+                        New
+                    </a>
+                    <a class="filter-pill {% if status_filter == 'shortlisted' %}active{% endif %}" href="{{ url_for('admin_dashboard', status='shortlisted') }}#applications">
+                        Shortlisted
+                    </a>
+                    <a class="filter-pill {% if status_filter == 'reviewed' %}active{% endif %}" href="{{ url_for('admin_dashboard', status='reviewed') }}#applications">
+                        Reviewed
+                    </a>
+                    <a class="filter-pill {% if status_filter == 'rejected' %}active{% endif %}" href="{{ url_for('admin_dashboard', status='rejected') }}#applications">
+                        Rejected
+                    </a>
+                </div>
+
+                {% if applications %}
+                    <div class="table-wrap">
+                        <table class="admin-table">
+                            <thead>
+                                <tr>
+                                    <th>Candidate</th>
+                                    <th>Applied Job</th>
+                                    <th>Contact</th>
+                                    <th>Address</th>
+                                    <th>Portfolio</th>
+                                    <th>About</th>
+                                    <th>Resume</th>
+                                    <th>Status</th>
+                                    <th>Applied On</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+                                {% for app in applications %}
+                                    <tr>
+                                        <td>
+                                            <span class="candidate-name">{{ app.full_name }}</span>
+                                            {% if app.role_interest %}
+                                                <span class="candidate-small">Interest: {{ app.role_interest }}</span>
+                                            {% endif %}
+                                        </td>
+
+                                        <td>
+                                            {% if app.job_title %}
+                                                {{ app.job_title }}
+                                            {% else %}
+                                                General Application
+                                            {% endif %}
+                                        </td>
+
+                                        <td>
+                                            {{ app.email }}
+                                            <span class="candidate-small">{{ app.phone }}</span>
+                                        </td>
+
+                                        <td>
+                                            {{ app.address }}
+                                            <span class="candidate-small">
+                                                {{ app.city }}, {{ app.state }} - {{ app.pincode }}
+                                            </span>
+                                        </td>
+
+                                        <td>
+                                            {% if app.portfolio %}
+                                                <a href="{{ app.portfolio }}" target="_blank" rel="noopener">Open Link</a>
+                                            {% else %}
+                                                —
+                                            {% endif %}
+                                        </td>
+
+                                        <td>
+                                            {% if app.about %}
+                                                {{ app.about }}
+                                            {% else %}
+                                                —
+                                            {% endif %}
+                                        </td>
+
+                                        <td>
+                                            <a href="{{ url_for('view_resume', filename=app.resume_filename) }}" target="_blank">
+                                                View PDF
+                                            </a>
+                                        </td>
+
+                                        <td>
+                                            <span class="status-badge status-{{ app.status }}">
+                                                {{ app.status }}
+                                            </span>
+                                        </td>
+
+                                        <td>{{ app.created_at }}</td>
+
+                                        <td>
+                                            <div class="candidate-actions">
+                                                <a class="mini-btn green" href="{{ url_for('shortlist_application', id=app.id) }}">
+                                                    Shortlist
+                                                </a>
+                                                <a class="mini-btn" href="{{ url_for('review_application', id=app.id) }}">
+                                                    Review
+                                                </a>
+                                                <a class="mini-btn danger" href="{{ url_for('reject_application', id=app.id) }}">
+                                                    Reject
+                                                </a>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="mobile-applications">
+                        {% for app in applications %}
+                            <article class="mobile-app-card">
+                                <h3>{{ app.full_name }}</h3>
+
+                                <div class="mobile-info">
+                                    <strong>Applied Job:</strong>
+                                    {% if app.job_title %}
+                                        {{ app.job_title }}
+                                    {% else %}
+                                        General Application
+                                    {% endif %}
+                                    <br>
+
+                                    <strong>Email:</strong> {{ app.email }}<br>
+                                    <strong>Phone:</strong> {{ app.phone }}<br>
+                                    <strong>Address:</strong>
+                                    {{ app.address }}, {{ app.city }}, {{ app.state }} - {{ app.pincode }}<br>
+
+                                    {% if app.portfolio %}
+                                        <strong>Portfolio:</strong>
+                                        <a href="{{ app.portfolio }}" target="_blank" rel="noopener">Open Link</a><br>
+                                    {% endif %}
+
+                                    {% if app.role_interest %}
+                                        <strong>Interest:</strong> {{ app.role_interest }}<br>
+                                    {% endif %}
+
+                                    {% if app.about %}
+                                        <strong>About:</strong> {{ app.about }}<br>
+                                    {% endif %}
+
+                                    <strong>Applied On:</strong> {{ app.created_at }}<br>
+                                    <strong>Status:</strong>
+                                    <span class="status-badge status-{{ app.status }}">
+                                        {{ app.status }}
+                                    </span>
+                                </div>
+
+                                <div class="candidate-actions" style="margin-top: 14px;">
+                                    <a class="mini-btn" href="{{ url_for('view_resume', filename=app.resume_filename) }}" target="_blank">
+                                        View PDF
+                                    </a>
+                                    <a class="mini-btn green" href="{{ url_for('shortlist_application', id=app.id) }}">
+                                        Shortlist
+                                    </a>
+                                    <a class="mini-btn" href="{{ url_for('review_application', id=app.id) }}">
+                                        Review
+                                    </a>
+                                    <a class="mini-btn danger" href="{{ url_for('reject_application', id=app.id) }}">
+                                        Reject
+                                    </a>
+                                </div>
+                            </article>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="empty-state">
+                        <h3>No Applications Yet</h3>
+                        <p>
+                            Candidate applications will appear here after users apply from the Careers page.
+                        </p>
+                    </div>
+                {% endif %}
+            </div>
+        </section>
+    </div>
+</main>
 {% endblock %}

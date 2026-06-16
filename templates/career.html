@@ -101,6 +101,82 @@
   .btn, .btn:link, .btn:visited, .btn:hover, .btn:focus { text-decoration: none !important; }
 
   /* ---------------------------------
+     Dynamic Job Openings from Admin
+  ----------------------------------*/
+  .job-openings-grid{
+    display:grid;
+    grid-template-columns:repeat(2,1fr);
+    gap:clamp(14px,2.2vw,22px);
+    margin-top:18px;
+  }
+
+  .job-card{
+    background:#fff;
+    border:1px solid rgba(0,0,0,.06);
+    border-radius:var(--radius);
+    box-shadow:var(--shadow);
+    padding:clamp(18px,3vw,24px);
+    display:grid;
+    gap:10px;
+  }
+
+  .job-card .kicker{
+    color:var(--red);
+    font-weight:900;
+    letter-spacing:.12em;
+    text-transform:uppercase;
+    font-size:11px;
+  }
+
+  .job-card h3{
+    margin:0;
+    font-size:clamp(22px,3vw,30px);
+    color:var(--ink);
+  }
+
+  .job-meta{
+    display:flex;
+    gap:8px;
+    flex-wrap:wrap;
+  }
+
+  .job-meta span{
+    background:var(--bg);
+    color:var(--muted);
+    border:1px solid rgba(0,0,0,.06);
+    border-radius:999px;
+    padding:7px 10px;
+    font-size:12px;
+    font-weight:700;
+  }
+
+  .job-card p{
+    margin:0;
+    color:var(--muted);
+    font-size:14px;
+    line-height:1.7;
+    white-space:pre-line;
+  }
+
+  .job-card .btn{
+    justify-self:start;
+    margin-top:6px;
+    text-decoration:none;
+  }
+
+  @media (max-width:720px){
+    .job-openings-grid{
+      grid-template-columns:1fr;
+    }
+
+    .job-card .btn{
+      width:100%;
+      text-align:center;
+      justify-content:center;
+    }
+  }
+
+  /* ---------------------------------
      Reveal on scroll (scoped)
   ----------------------------------*/
   .cr-reveal{opacity:0; transform:translateY(16px); transition:opacity .6s ease, transform .6s ease}
@@ -201,25 +277,83 @@
     <div class="lane" aria-hidden="true"></div>
   </section>
 
-  <!-- Open Roles (No openings state) -->
+  <!-- Open Roles -->
   <section id="open-roles" class="roles">
     <div class="wrap">
       <header class="cr-reveal">
-     
-        <p class="career-sub">
-We are not currently hiring! still you can share your resume with us for future opportunities.
-</p>
+        <h2>Current Openings</h2>
+
+        {% if job_openings %}
+          <p class="career-sub">
+            Explore the current openings posted by the Ayanant admin team. Select a role below and submit your application.
+          </p>
+        {% else %}
+          <p class="career-sub">
+            We are not currently hiring. Please check this page again later for future opportunities.
+          </p>
+        {% endif %}
       </header>
 
+      {% if job_openings %}
+        <div class="job-openings-grid cr-reveal">
+          {% for job in job_openings %}
+            <article class="job-card" id="job-{{ job.id }}">
+              <div class="kicker">Open Position</div>
 
+              <h3>{{ job.title }}</h3>
+
+              <div class="job-meta">
+                {% if job.department %}
+                  <span>{{ job.department }}</span>
+                {% endif %}
+
+                {% if job.location %}
+                  <span>{{ job.location }}</span>
+                {% endif %}
+
+                {% if job.employment_type %}
+                  <span>{{ job.employment_type }}</span>
+                {% endif %}
+              </div>
+
+              {% if job.description %}
+                <p>{{ job.description }}</p>
+              {% endif %}
+
+              {% if job.requirements %}
+                <p><strong>Requirements:</strong><br>{{ job.requirements }}</p>
+              {% endif %}
+
+              <a class="btn" href="#apply" data-job-id="{{ job.id }}">
+                Apply Now
+              </a>
+            </article>
+          {% endfor %}
+        </div>
+      {% else %}
+        <div class="empty cr-reveal">
+          <div class="kicker">No Openings</div>
+          <p>
+            There are no active job openings right now. New openings will appear here once posted from the admin panel.
+          </p>
+          <div class="row">
+            <a class="btn secondary" href="{{ url_for('contact') }}">
+              Contact Us
+            </a>
+          </div>
+        </div>
+      {% endif %}
     </div>
   </section>
 
   <!-- Application Form -->
+  {% if job_openings %}
   <section id="apply" class="apply">
     <div class="wrap">
-      <h2 class="cr-reveal">Share Your Resume</h2>
-      <p class="career-sub cr-reveal">Tell us about you. We’ll review and get in touch when we find a match.</p>
+      <h2 class="cr-reveal">Apply for a Role</h2>
+      <p class="career-sub cr-reveal">
+        Select the opening you want to apply for and submit your details with your PDF resume.
+      </p>
 
       {% with messages = get_flashed_messages(with_categories=true) %}
         {% if messages %}
@@ -234,9 +368,20 @@ We are not currently hiring! still you can share your resume with us for future 
       <form class="form cr-reveal" method="post" action="{{ url_for('apply') }}" enctype="multipart/form-data">
         <div class="grid">
           <div class="field">
+            <label class="label" for="job_id">Applying For</label>
+            <select class="select" id="job_id" name="job_id" required>
+              <option value="">Select job opening</option>
+              {% for job in job_openings %}
+                <option value="{{ job.id }}">{{ job.title }}</option>
+              {% endfor %}
+            </select>
+          </div>
+
+          <div class="field">
             <label class="label" for="full_name">Full Name</label>
             <input class="input" type="text" id="full_name" name="full_name" placeholder="Rahul Baruah" required>
           </div>
+
           <div class="field">
             <label class="label" for="email">Email</label>
             <input class="input" type="email" id="email" name="email" placeholder="you@example.com" required>
@@ -246,6 +391,7 @@ We are not currently hiring! still you can share your resume with us for future 
             <label class="label" for="phone">Phone</label>
             <input class="input" type="tel" id="phone" name="phone" placeholder="+91-XXXXXXXXXX" required>
           </div>
+
           <div class="field">
             <label class="label" for="portfolio">Portfolio / LinkedIn (optional)</label>
             <input class="input" type="url" id="portfolio" name="portfolio" placeholder="https://…">
@@ -255,6 +401,7 @@ We are not currently hiring! still you can share your resume with us for future 
             <label class="label" for="address">Address</label>
             <input class="input" type="text" id="address" name="address" placeholder="Street address" required>
           </div>
+
           <div class="field">
             <label class="label" for="city">City</label>
             <input class="input" type="text" id="city" name="city" placeholder="Guwahati" required>
@@ -264,6 +411,7 @@ We are not currently hiring! still you can share your resume with us for future 
             <label class="label" for="state">State</label>
             <input class="input" type="text" id="state" name="state" placeholder="Assam" required>
           </div>
+
           <div class="field">
             <label class="label" for="pincode">PIN Code</label>
             <input class="input" type="text" id="pincode" name="pincode" placeholder="781001" required>
@@ -281,19 +429,34 @@ We are not currently hiring! still you can share your resume with us for future 
             <input class="file" type="file" id="resume" name="resume" accept=".pdf,application/pdf" required>
             <div class="field-note">Upload PDF format only.</div>
           </div>
+
           <div class="field">
-            <label class="label" for="role_interest">Role Interest (optional)</label>
-            <input class="input" type="text" id="role_interest" name="role_interest" placeholder="e.g., Design Associate, Frontend, Content">
+            <label class="label" for="role_interest">Role Interest</label>
+            <input class="input" type="text" id="role_interest" name="role_interest" placeholder="Auto-filled from selected job" readonly>
           </div>
         </div>
 
         <div class="actions">
           <button class="btn" type="submit">Submit Application</button>
-          <a class="btn secondary" href="mailto:careers@ayanant.in?subject=General%20Application&body=Please%20attach%20your%20CV%20and%20portfolio%20links.">Email Instead</a>
         </div>
       </form>
     </div>
   </section>
+  {% else %}
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        <section class="apply">
+          <div class="wrap">
+            <div class="flash-wrap cr-reveal">
+              {% for category, message in messages %}
+                <div class="flash-msg flash-{{ category }}">{{ message }}</div>
+              {% endfor %}
+            </div>
+          </div>
+        </section>
+      {% endif %}
+    {% endwith %}
+  {% endif %}
 
   <section id="back-home-section">
     <style>
@@ -365,5 +528,36 @@ We are not currently hiring! still you can share your resume with us for future 
         els.forEach(el=>io.observe(el));
       })();
     </script>
+<script>
+  document.addEventListener('DOMContentLoaded', function(){
+    const jobSelect = document.getElementById('job_id');
+    const roleInterest = document.getElementById('role_interest');
+    const applyButtons = document.querySelectorAll('[data-job-id]');
+
+    function syncRoleInterest(){
+      if(!jobSelect || !roleInterest) return;
+
+      const selected = jobSelect.options[jobSelect.selectedIndex];
+      roleInterest.value = selected && selected.value ? selected.textContent.trim() : '';
+    }
+
+    if(jobSelect){
+      jobSelect.addEventListener('change', syncRoleInterest);
+      syncRoleInterest();
+    }
+
+    applyButtons.forEach(function(button){
+      button.addEventListener('click', function(){
+        const jobId = button.getAttribute('data-job-id');
+
+        if(jobSelect && jobId){
+          jobSelect.value = jobId;
+          syncRoleInterest();
+        }
+      });
+    });
+  });
+</script>
+
   </section>
 {% endblock %}
