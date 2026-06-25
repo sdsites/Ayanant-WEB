@@ -5,6 +5,8 @@ from datetime import datetime, timezone
 from functools import wraps
 from pathlib import Path
 
+from PIL import Image, ImageOps
+
 from flask import (
     Flask,
     flash,
@@ -20,7 +22,13 @@ from werkzeug.utils import secure_filename
 BASE_DIR = Path(__file__).resolve().parent
 DATABASE = BASE_DIR / "applications.db"
 UPLOAD_FOLDER = BASE_DIR / "uploads" / "resumes"
+STATIC_FOLDER = BASE_DIR / "static"
+THUMB_FOLDER = STATIC_FOLDER / "_thumbs"
 ALLOWED_EXTENSIONS = {"pdf"}
+IMAGE_EXTENSIONS = {".jpg", ".jpeg", ".png", ".webp"}
+THUMB_SIZE = (720, 520)
+THUMB_QUALITY = 78
+THUMB_URL_CACHE: dict[str, str] = {}
 
 app = Flask(__name__)
 app.config["SECRET_KEY"] = os.environ.get("SECRET_KEY", "change-this-secret-key")
@@ -154,6 +162,147 @@ def admin_required(view_func):
 
     return wrapped_view
 
+
+
+
+def _safe_static_image_path(filename: str) -> Path | None:
+    """Resolve a static image path safely inside /static."""
+    if not filename:
+        return None
+
+    clean_name = filename.replace("\\", "/").lstrip("/")
+    source_path = (STATIC_FOLDER / clean_name).resolve()
+
+    try:
+        source_path.relative_to(STATIC_FOLDER.resolve())
+    except ValueError:
+        return None
+
+    if source_path.suffix.lower() not in IMAGE_EXTENSIONS:
+        return None
+
+    if "_thumbs" in source_path.parts:
+        return None
+
+    return source_path
+
+
+def ensure_thumbnail(filename: str) -> str:
+    """
+    Create and return a web thumbnail path for a static image.
+
+    The page displays this thumbnail path for faster loading.
+    The original image path remains available through data-full-src for modal/full view.
+    """
+    clean_name = filename.replace("\\", "/").lstrip("/")
+    source_path = _safe_static_image_path(clean_name)
+
+    if source_path is None or not source_path.exists():
+        return clean_name
+
+    relative_source = source_path.relative_to(STATIC_FOLDER)
+    thumb_relative = Path("_thumbs") / relative_source.with_suffix(".webp")
+    thumb_path = STATIC_FOLDER / thumb_relative
+
+    try:
+        source_mtime = source_path.stat().st_mtime
+        thumb_exists = thumb_path.exists()
+        thumb_is_fresh = thumb_exists and thumb_path.stat().st_mtime >= source_mtime
+
+        if not thumb_is_fresh:
+            thumb_path.parent.mkdir(parents=True, exist_ok=True)
+
+            with Image.open(source_path) as image:
+                image = ImageOps.exif_transpose(image)
+                image.thumbnail(THUMB_SIZE, Image.Resampling.LANCZOS)
+
+                if image.mode not in ("RGB", "L"):
+                    image = image.convert("RGB")
+
+                image.save(
+                    thumb_path,
+                    "WEBP",
+                    quality=THUMB_QUALITY,
+                    method=6,
+                    optimize=True,
+                )
+
+        return thumb_relative.as_posix()
+    except Exception:
+        return clean_name
+
+
+def _normalize_static_name(filename: str) -> str:
+    """Normalize static file names for URL/cache lookup."""
+    return filename.replace("\\", "/").lstrip("/")
+
+
+def prebuild_unnatfarm_thumbnails() -> None:
+    """
+    Build UnnatFarm thumbnails once during app startup.
+
+    IMPORTANT:
+    This prevents Pillow from resizing/converting images during /unnatfarm page load.
+    The page request will only read THUMB_URL_CACHE and return URLs instantly.
+    """
+    THUMB_URL_CACHE.clear()
+
+    image_paths: list[Path] = []
+
+    # 1) All images inside static/unnat/
+    unnat_folder = STATIC_FOLDER / "unnat"
+    if unnat_folder.exists():
+        image_paths.extend(
+            path
+            for path in unnat_folder.rglob("*")
+            if path.is_file() and path.suffix.lower() in IMAGE_EXTENSIONS
+        )
+
+    # 2) Root-level UnnatFarm success images such as static/unnat11.jpg, etc.
+    for pattern in ("unnat*.jpg", "unnat*.jpeg", "unnat*.png", "unnat*.webp"):
+        image_paths.extend(
+            path
+            for path in STATIC_FOLDER.glob(pattern)
+            if path.is_file() and path.suffix.lower() in IMAGE_EXTENSIONS
+        )
+
+    # 3) Logo thumbnail cache support, safe even if template uses original logo directly.
+    logo_path = STATIC_FOLDER / "logo.png"
+    if logo_path.exists():
+        image_paths.append(logo_path)
+
+    seen: set[str] = set()
+
+    for image_path in sorted(image_paths):
+        try:
+            relative_name = image_path.relative_to(STATIC_FOLDER).as_posix()
+        except ValueError:
+            continue
+
+        if relative_name in seen:
+            continue
+
+        seen.add(relative_name)
+
+        # This is the only place where ensure_thumbnail should create thumbnails.
+        THUMB_URL_CACHE[relative_name] = ensure_thumbnail(relative_name)
+
+
+@app.context_processor
+def inject_thumbnail_helpers():
+    def thumb_url(filename: str) -> str:
+        """
+        Return a cached thumbnail URL only.
+
+        IMPORTANT:
+        This does NOT generate thumbnails during page rendering.
+        If a thumbnail was not prebuilt, it safely returns the original file URL.
+        """
+        clean_name = _normalize_static_name(filename)
+        cached_name = THUMB_URL_CACHE.get(clean_name, clean_name)
+        return url_for("static", filename=cached_name)
+
+    return {"thumb_url": thumb_url}
 
 @app.route("/")
 @app.route("/home")
@@ -510,6 +659,7 @@ def review(id: int):
 
 
 init_storage()
+prebuild_unnatfarm_thumbnails()
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000, debug=True)
