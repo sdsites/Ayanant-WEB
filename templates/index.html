@@ -767,7 +767,30 @@
           </figure>
         </div>
 
-
+  <!-- Slide 4 -->
+        <div class="slide" role="group" aria-roledescription="slide" aria-label="3 of 4">
+          <figure>
+            <div class="media"><img src="static/recognitionimage/recog1.jpg" alt="Award / recognition 4"></div>
+            <figcaption>
+              <div class="cap-left">
+                <div class="cap-title">Engaged in Shaping Ideas at NE Conclave 2.0</div>
+              </div>
+            </figcaption>
+          </figure>
+        </div>
+        
+  <!-- Slide 5 -->
+        <div class="slide" role="group" aria-roledescription="slide" aria-label="3 of 4">
+          <figure>
+            <div class="media"><img src="static/recognitionimage/recog2.jpg" alt="Award / recognition 5"></div>
+            <figcaption>
+              <div class="cap-left">
+                <div class="cap-title">Engaged in Shaping Ideas at NE Conclave 2.0</div>
+              </div>
+            </figcaption>
+          </figure>
+        </div>
+  <!-- Slide 6 -->
 
         <div class="slide" role="group" aria-roledescription="slide" aria-label="4 of 4">
   <figure>
@@ -2956,5 +2979,71 @@
 </section>
 
 
+
+
+<style>
+  /* =========================================================
+     FINAL SLIDER IMAGE FULL-DISPLAY FIX ONLY
+     - fixes hidden/cropped certificate/store slider images
+     - removes fixed aspect-ratio crop box
+     - shows the full image by allowing the media area to grow
+     ========================================================= */
+
+  #awards-slider .slider,
+  #ne-locals .slider,
+  #awards-slider .slide,
+  #ne-locals .slide,
+  #awards-slider figure,
+  #ne-locals figure{
+    overflow:visible !important;
+  }
+
+  #awards-slider .media,
+  #ne-locals .media{
+    aspect-ratio:auto !important;
+    width:100% !important;
+    height:auto !important;
+    min-height:0 !important;
+    max-height:none !important;
+    display:flex !important;
+    align-items:center !important;
+    justify-content:center !important;
+    overflow:visible !important;
+    background:#fff !important;
+    border-radius:var(--radius) !important;
+    padding:clamp(14px, 2.2vw, 30px) !important;
+  }
+
+  #awards-slider .media img,
+  #ne-locals .media img{
+    display:block !important;
+    width:min(88%, 1120px) !important;
+    max-width:88% !important;
+    height:auto !important;
+    max-height:none !important;
+    object-fit:contain !important;
+    object-position:center center !important;
+    margin:0 auto !important;
+    transform:none !important;
+  }
+
+  #awards-slider figure:hover .media img,
+  #ne-locals figure:hover .media img{
+    transform:none !important;
+  }
+
+  @media (max-width:720px){
+    #awards-slider .media,
+    #ne-locals .media{
+      padding:10px !important;
+    }
+
+    #awards-slider .media img,
+    #ne-locals .media img{
+      width:96% !important;
+      max-width:96% !important;
+    }
+  }
+</style>
 
 {% endblock %}

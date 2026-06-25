@@ -357,6 +357,11 @@ def unnatfarm():
     return render_template("unnatfarm.html")
 
 
+@app.route("/nelocals")
+def nelocals():
+    return render_template("nelocals.html")
+
+
 @app.route("/apply", methods=["POST"])
 def apply():
     job_id_raw = request.form.get("job_id", "").strip()
