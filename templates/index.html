@@ -322,7 +322,6 @@
 
 </style> <!-- Moving Gamusa road (change --img in the style above to your actual online link) --> <div class="lane" aria-hidden="true"></div> </section>
 
-</style> <!-- The moving Gamusa "road" --> <div class="track" aria-hidden="true"></div> </section>
 
 
 <!-- What We Offer -->
@@ -591,7 +590,6 @@
 
 </style> <!-- Moving Gamusa road (change --img in the style above to your actual online link) --> <div class="lane" aria-hidden="true"></div> </section>
 
-</style> <!-- The moving Gamusa "road" --> <div class="track" aria-hidden="true"></div> </section>
 
 <section id="awards-slider" aria-labelledby="awards-title">
   <style>
@@ -604,112 +602,404 @@
       --radius:16px;
       --maxw:1200px;
       --shadow:0 10px 30px rgba(0,0,0,.08);
+      --award-card-w:52%;
+      --award-gap:clamp(12px,1.8vw,22px);
       color:var(--ink);
       background:var(--bg);
       position:relative;
-      overflow:clip;
+      overflow:hidden;
     }
-    #awards-slider .wrap{ width:min(100%,var(--maxw)); margin-inline:auto; padding:clamp(34px,6vw,72px) clamp(16px,4vw,28px); }
+
+    #awards-slider .wrap{
+      width:min(100%,var(--maxw));
+      margin-inline:auto;
+      padding:clamp(34px,6vw,72px) clamp(16px,4vw,28px);
+      position:relative;
+    }
 
     /* ===== Header ===== */
     #awards-slider .eyebrow{
-      display:inline-flex; align-items:center; gap:10px;
-      font-weight:700; letter-spacing:.08em; text-transform:uppercase;
-      color:var(--muted); font-size:12px; margin-bottom:8px;
+      display:inline-flex;
+      align-items:center;
+      gap:10px;
+      font-weight:700;
+      letter-spacing:.08em;
+      text-transform:uppercase;
+      color:var(--muted);
+      font-size:12px;
+      margin-bottom:8px;
     }
-    #awards-slider .eyebrow::before,#awards-slider .eyebrow::after{
-      content:""; width:20px; height:2px; background:currentColor; opacity:.3;
+
+    #awards-slider .eyebrow::before,
+    #awards-slider .eyebrow::after{
+      content:"";
+      width:20px;
+      height:2px;
+      background:currentColor;
+      opacity:.3;
     }
+
+    #awards-slider header{
+      position:relative;
+      z-index:3;
+      margin:0 0 18px;
+    }
+
     #awards-slider .title{
       font-family:"Bebas Neue", Inter, ui-sans-serif;
-      font-size:clamp(32px,6vw,68px); letter-spacing:1px; line-height:.95; text-transform:uppercase;
+      font-size:clamp(32px,6vw,68px);
+      letter-spacing:1px;
+      line-height:.95;
+      text-transform:uppercase;
       text-shadow:0 2px 0 rgba(255,255,255,.45);
-      margin:0 0 8px;
+      margin:0;
     }
-    #awards-slider .sub{ color:var(--muted); max-width:60ch; font-size:15px; margin:0 0 16px; }
 
-    /* ===== Carousel (frameless) ===== */
-    #awards-slider .slider{ position:relative; margin-top:12px; background:transparent; border:none; box-shadow:none; padding:0; }
+    #awards-slider .sub{
+      color:var(--muted);
+      max-width:60ch;
+      font-size:15px;
+      margin:0 0 16px;
+    }
+
+    /* ===== Carousel - same visual style, responsive side-preview layout ===== */
+    #awards-slider .slider{
+      position:relative;
+      z-index:1;
+      width:min(100%, 1120px);
+      margin:0 auto;
+      background:transparent;
+      border:none;
+      box-shadow:none;
+      padding:0;
+      overflow:hidden !important;
+      border-radius:var(--radius);
+      isolation:isolate;
+    }
+
     #awards-slider .track{
-      display:grid; grid-auto-flow:column; grid-auto-columns:100%;
-      overflow-x:auto; overscroll-behavior-x:contain;
-      scroll-snap-type:x mandatory; scroll-behavior:smooth;
-      -webkit-overflow-scrolling:touch;
-      gap:0; scrollbar-width:none;
+      display:flex !important;
+      align-items:stretch;
+      gap:var(--award-gap) !important;
+      overflow:visible !important;
+      overscroll-behavior-x:contain;
+      scroll-snap-type:none !important;
+      scroll-behavior:auto !important;
+      -webkit-overflow-scrolling:auto;
+      scrollbar-width:none;
       cursor:grab;
       user-select:none;
       -webkit-user-select:none;
-      touch-action:pan-x pinch-zoom; /* smoother swipes on mobile */
+      touch-action:pan-y;
+      will-change:transform;
+      transform:translate3d(0,0,0);
+      transition:transform .55s cubic-bezier(.22,.8,.22,1);
     }
-    #awards-slider .track.grabbing{ cursor:grabbing; }
-    #awards-slider .track::-webkit-scrollbar{ display:none; }
 
-    #awards-slider .slide{ position:relative; scroll-snap-align:center; outline:none; }
+    #awards-slider .track.grabbing,
+    #awards-slider .track.is-dragging{
+      cursor:grabbing;
+      transition:none !important;
+    }
+
+    #awards-slider .track::-webkit-scrollbar{
+      display:none;
+    }
+
+    #awards-slider .slide{
+      position:relative;
+      flex:0 0 var(--award-card-w) !important;
+      min-width:var(--award-card-w) !important;
+      max-width:var(--award-card-w) !important;
+      scroll-snap-align:none !important;
+      outline:none;
+      display:flex;
+      align-items:stretch;
+      overflow:hidden;
+      border-radius:var(--radius);
+    }
+
     #awards-slider figure{
-      margin:0; background:transparent; border:none; overflow:hidden;
-      display:grid; grid-template-rows:auto auto; gap:0; border-radius:var(--radius);
+      width:100%;
+      height:auto;
+      margin:0;
+      background:transparent;
+      border:none;
+      overflow:hidden;
+      display:grid;
+      grid-template-rows:clamp(250px, 31vw, 380px) 76px;
+      gap:0;
+      border-radius:var(--radius);
     }
+
     #awards-slider .media{
-      aspect-ratio:16 / 9; background:#fff; display:grid; place-items:center; overflow:hidden; border-radius:var(--radius);
+      width:100%;
+      height:100%;
+      min-height:0;
+      aspect-ratio:auto !important;
+      background:transparent !important;
+      display:block;
+      overflow:hidden;
+      border-radius:var(--radius) var(--radius) 0 0;
+      cursor:zoom-in;
     }
+
     #awards-slider .media img{
-      width:100%; height:100%; object-fit:cover; object-position:center;
-      transition:transform .45s ease, filter .45s ease; display:block;
-      pointer-events:none; /* prevent image from intercepting drags */
+      width:100%;
+      height:100%;
+      object-fit:cover !important;
+      object-position:center;
+      transition:transform .45s ease, filter .45s ease;
+      display:block;
+      cursor:zoom-in;
+      user-select:none;
+      -webkit-user-drag:none;
     }
-    #awards-slider figure:hover .media img{ transform:scale(1.02); }
-    #awards-slider figcaption{ padding:12px 8px; display:flex; align-items:center; justify-content:space-between; gap:10px; }
-    #awards-slider .cap-left{ display:grid; gap:4px; }
+
+    #awards-slider figure:hover .media img{
+      transform:scale(1.02);
+    }
+
+    #awards-slider figcaption{
+      height:76px;
+      min-height:76px;
+      max-height:76px;
+      padding:12px 8px !important;
+      display:flex;
+      align-items:center;
+      justify-content:flex-start;
+      gap:10px;
+      overflow:hidden;
+      background:transparent;
+      position:relative;
+      z-index:1;
+    }
+
+    #awards-slider .cap-left{
+      display:grid;
+      gap:4px;
+      min-width:0;
+      width:100%;
+    }
+
     #awards-slider .cap-title{
       font-family:"Bebas Neue", Inter, ui-sans-serif;
-      font-size:clamp(20px,2.6vw,28px); letter-spacing:.6px; line-height:1; text-transform:uppercase;
+      font-size:clamp(18px,2.1vw,25px);
+      letter-spacing:.6px;
+      line-height:1.05;
+      text-transform:uppercase;
+      color:var(--ink);
+      display:-webkit-box;
+      -webkit-line-clamp:2;
+      -webkit-box-orient:vertical;
+      overflow:hidden;
     }
-    #awards-slider .cap-sub{ color:var(--muted); font-size:13px; }
 
-    /* ===== Controls ===== */
+    #awards-slider .cap-sub{
+      color:var(--muted);
+      font-size:13px;
+    }
+
+    /* No visible previous/next buttons. Manual left/right swipe stays active. */
     #awards-slider .ctrl{
-      position:absolute; inset:auto 8px 50% 8px; translate:0 50%;
-      display:flex; justify-content:space-between; pointer-events:none;
+      display:none !important;
     }
-    #awards-slider .btn{
-      pointer-events:auto; border:1px solid #111; background:#fff; color:#111;
-      width:44px; height:44px; border-radius:999px; display:grid; place-items:center;
-      box-shadow:0 10px 24px rgba(0,0,0,.10);
-      transition:transform .12s ease, filter .12s ease;
-    }
-    #awards-slider .btn:hover{ transform:translateY(-1px); filter:saturate(1.05); }
-    #awards-slider .btn:active{ transform:none; }
-    #awards-slider .btn svg{ width:18px; height:18px; }
 
     /* Dots */
-    #awards-slider .dots{ display:flex; gap:8px; justify-content:center; align-items:center; padding:12px 0 6px; }
+    #awards-slider .dots{
+      display:flex;
+      gap:8px;
+      justify-content:center;
+      align-items:center;
+      padding:12px 0 6px;
+      position:relative;
+      z-index:2;
+    }
+
     #awards-slider .dot{
-      width:8px; height:8px; border-radius:999px; background:#cfc9c2; border:0; padding:0; cursor:pointer;
+      width:8px;
+      height:8px;
+      border-radius:999px;
+      background:#cfc9c2;
+      border:0;
+      padding:0;
+      cursor:pointer;
       transition:transform .12s ease, background .2s ease;
     }
-    #awards-slider .dot[aria-current="true"]{ background:var(--red); transform:scale(1.4); }
+
+    #awards-slider .dot[aria-current="true"]{
+      background:var(--red);
+      transform:scale(1.4);
+    }
 
     /* CTA (if you later add one) */
     #awards-slider .cta{
-      display:inline-flex; align-items:center; justify-content:center; gap:10px;
-      margin-top:14px; background:var(--red); color:#fff; text-decoration:none;
-      padding:12px 18px; border-radius:999px; font-weight:900; letter-spacing:.04em;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap:10px;
+      margin-top:14px;
+      background:var(--red);
+      color:#fff;
+      text-decoration:none;
+      padding:12px 18px;
+      border-radius:999px;
+      font-weight:900;
+      letter-spacing:.04em;
       box-shadow:0 6px 16px rgba(179,63,54,.28);
       transition: transform .18s ease, background .18s ease, box-shadow .18s ease;
     }
-    #awards-slider .cta:hover{ transform:translateY(-1px); box-shadow:0 10px 20px rgba(179,63,54,.30); }
-    #awards-slider .cta:active{ transform:translateY(0); }
+
+    #awards-slider .cta:hover{
+      transform:translateY(-1px);
+      box-shadow:0 10px 20px rgba(179,63,54,.30);
+    }
+
+    #awards-slider .cta:active{
+      transform:translateY(0);
+    }
 
     /* Reveal helper */
-    #awards-slider .reveal{ opacity:0; transform:translateY(16px); transition:opacity .6s ease, transform .6s ease; }
-    #awards-slider .in{ opacity:1; transform:none; }
+    #awards-slider .reveal{
+      opacity:0;
+      transform:translateY(16px);
+      transition:opacity .6s ease, transform .6s ease;
+    }
+
+    #awards-slider .in{
+      opacity:1;
+      transform:none;
+    }
+
+    /* Full image popup */
+    .awards-modal{
+      position:fixed;
+      inset:0;
+      z-index:999999;
+      display:none;
+      align-items:center;
+      justify-content:center;
+      background:rgba(0,0,0,.76);
+      padding:clamp(14px,3vw,28px);
+      overscroll-behavior:contain;
+      touch-action:none;
+    }
+
+    .awards-modal.is-open{
+      display:flex;
+    }
+
+    .awards-modal-panel{
+      position:relative;
+      width:min(1080px,96vw);
+      max-height:90vh;
+      border-radius:18px;
+      overflow:hidden;
+      background:rgba(255,255,255,.06);
+      box-shadow:0 30px 90px rgba(0,0,0,.48);
+    }
+
+    .awards-modal-img{
+      width:100%;
+      max-height:90vh;
+      object-fit:contain;
+      display:block;
+      background:rgba(0,0,0,.18);
+    }
+
+    .awards-modal-close{
+      position:absolute;
+      top:12px;
+      right:12px;
+      width:44px;
+      height:44px;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,.28);
+      background:rgba(0,0,0,.54);
+      color:#fff;
+      display:grid;
+      place-items:center;
+      cursor:pointer;
+      font-size:20px;
+      line-height:1;
+      box-shadow:0 10px 24px rgba(0,0,0,.28);
+      transition:transform .15s ease, background .15s ease;
+    }
+
+    .awards-modal-close:hover{
+      transform:scale(1.05);
+      background:rgba(0,0,0,.70);
+    }
+
+    html.awards-modal-lock,
+    body.awards-modal-lock{
+      overflow:hidden !important;
+      touch-action:none !important;
+    }
 
     /* Responsive */
-    @media (max-width:980px){ #awards-slider .ctrl{ inset:auto 6px 50% 6px; } }
+    @media (max-width:980px){
+      #awards-slider{
+        --award-card-w:72%;
+        --award-gap:16px;
+      }
+
+      #awards-slider .slider{
+        width:min(100%, 820px);
+      }
+
+      #awards-slider figure{
+        grid-template-rows:clamp(245px, 48vw, 360px) 76px;
+      }
+    }
+
     @media (max-width:720px){
-      #awards-slider .wrap{ padding-bottom:28px; }
-      #awards-slider .btn{ width:40px; height:40px; }
-      #awards-slider .media{ aspect-ratio:4 / 3; }
+      #awards-slider{
+        --award-card-w:86%;
+        --award-gap:12px;
+      }
+
+      #awards-slider .wrap{
+        padding:clamp(30px,7vw,48px) clamp(14px,4vw,20px) 28px;
+      }
+
+      #awards-slider header{
+        margin-bottom:14px;
+      }
+
+      #awards-slider .slider{
+        width:100%;
+      }
+
+      #awards-slider figure{
+        grid-template-rows:clamp(220px, 66vw, 320px) 78px;
+      }
+
+      #awards-slider figcaption{
+        height:78px;
+        min-height:78px;
+        max-height:78px;
+      }
+
+      #awards-slider .cap-title{
+        font-size:clamp(17px,5.4vw,22px);
+      }
+
+      .awards-modal-close{
+        width:42px;
+        height:42px;
+      }
+    }
+
+    @media (max-width:520px){
+      #awards-slider{
+        --award-card-w:90%;
+        --award-gap:10px;
+      }
+
+      #awards-slider figure{
+        grid-template-rows:220px 78px;
+      }
     }
   </style>
 
@@ -719,101 +1009,83 @@
     </header>
 
     <div class="slider reveal">
-      <!-- Controls -->
-      <div class="ctrl" aria-hidden="true">
-        <button class="btn prev" type="button" aria-label="Previous">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>
-        </button>
-        <button class="btn next" type="button" aria-label="Next">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 6l6 6-6 6"/></svg>
-        </button>
-      </div>
-
-      <!-- Track (3 slides only) -->
+      <!-- Track -->
       <div class="track" role="region" aria-roledescription="carousel" aria-label="Awards and recognitions" tabindex="0">
-        <!-- Slide 1 -->
-        <div class="slide" role="group" aria-roledescription="slide" aria-label="1 of 4">
-          <figure>
-            <div class="media"><img src="static/certificateayanant.png" alt="Award / recognition 1"></div>
-            <figcaption>
-              <div class="cap-left">
-                <div class="cap-title">Officially registered with Startup India.</div>
-              </div>
-            </figcaption>
-          </figure>
-        </div>
+
         <!-- Slide 2 -->
-        <div class="slide" role="group" aria-roledescription="slide" aria-label="2 of 4">
+        <div class="slide" role="group" aria-roledescription="slide" aria-label="2 of 6">
           <figure>
             <div class="media"><img src="static/gallery/03.jpg" alt="Award / recognition 2"></div>
             <figcaption>
               <div class="cap-left">
-                <div class="cap-title">Fueling Growth with NEATEHUB’s RKVY Grant.</div>
-                
+                <div class="cap-title">Fueling Growth with NEATEHUB’s RKVY&nbsp;Grant.</div>
               </div>
-              
             </figcaption>
           </figure>
         </div>
+
         <!-- Slide 3 -->
-        <div class="slide" role="group" aria-roledescription="slide" aria-label="3 of 4">
+        <div class="slide" role="group" aria-roledescription="slide" aria-label="3 of 6">
           <figure>
             <div class="media"><img src="static/gallery/04.jpg" alt="Award / recognition 3"></div>
             <figcaption>
               <div class="cap-left">
-                <div class="cap-title">Engaged in Shaping Ideas at NE Conclave 2.0</div>
+                <div class="cap-title">Engaged in Shaping Ideas at NE Conclave&nbsp;2.0</div>
               </div>
             </figcaption>
           </figure>
         </div>
 
-  <!-- Slide 4 -->
-        <div class="slide" role="group" aria-roledescription="slide" aria-label="3 of 4">
+        <!-- Slide 4 -->
+        <div class="slide" role="group" aria-roledescription="slide" aria-label="4 of 6">
           <figure>
             <div class="media"><img src="static/recognitionimage/recog1.jpg" alt="Award / recognition 4"></div>
             <figcaption>
               <div class="cap-left">
-                <div class="cap-title">Engaged in Shaping Ideas at NE Conclave 2.0</div>
+                <div class="cap-title">Engaged in Shaping Ideas at NE Conclave&nbsp;2.0</div>
               </div>
             </figcaption>
           </figure>
         </div>
-        
-  <!-- Slide 5 -->
-        <div class="slide" role="group" aria-roledescription="slide" aria-label="3 of 4">
+
+        <!-- Slide 5 -->
+        <div class="slide" role="group" aria-roledescription="slide" aria-label="5 of 6">
           <figure>
             <div class="media"><img src="static/recognitionimage/recog2.jpg" alt="Award / recognition 5"></div>
             <figcaption>
               <div class="cap-left">
-                <div class="cap-title">Engaged in Shaping Ideas at NE Conclave 2.0</div>
+                <div class="cap-title">Engaged in Shaping Ideas at NE Conclave&nbsp;2.0</div>
               </div>
             </figcaption>
           </figure>
         </div>
-  <!-- Slide 6 -->
 
-        <div class="slide" role="group" aria-roledescription="slide" aria-label="4 of 4">
-  <figure>
-    <div class="media">
-      <img src="static/gallery/gallery10.jpg" alt="Award / recognition 4">
-    </div>
-    <figcaption>
-      <div class="cap-left">
-        <div class="cap-title">Nagaland Meet: Linking Opportunities.</div>
-        
-      </div>
-    </figcaption>
-  </figure>
-</div>
+        <!-- Slide 6 -->
+        <div class="slide" role="group" aria-roledescription="slide" aria-label="6 of 6">
+          <figure>
+            <div class="media">
+              <img src="static/gallery/gallery10.jpg" alt="Award / recognition 6">
+            </div>
+            <figcaption>
+              <div class="cap-left">
+                <div class="cap-title">Nagaland Meet: Linking Opportunities.</div>
+              </div>
+            </figcaption>
+          </figure>
+        </div>
       </div><!-- /.track -->
-
-      <!-- Slide 4 -->
-
 
       <!-- Dots -->
       <div class="dots" role="tablist" aria-label="Slides"></div>
     </div><!-- /.slider -->
   </div><!-- /.wrap -->
+
+  <div class="awards-modal" id="awardsImageModal" aria-hidden="true">
+    <div class="awards-modal-panel" role="dialog" aria-modal="true" aria-label="Awards image viewer">
+      <button class="awards-modal-close" type="button" aria-label="Close image viewer">✕</button>
+      <img class="awards-modal-img" src="" alt="Expanded award image">
+    </div>
+  </div>
 
   <script>
     // Reveal-on-scroll
@@ -828,144 +1100,499 @@
       els.forEach(el=>io.observe(el));
     })();
 
-    // Carousel with faster autoplay + drag/swipe
+    // Awards continuous autoplay + half-side preview + left/right swipe + full image popup
     (function(){
-      const sec   = document.getElementById('awards-slider');
-      if(!sec) return;
+      const sec = document.getElementById('awards-slider');
+      if (!sec) return;
+
+      const slider = sec.querySelector('.slider');
       const track = sec.querySelector('.track');
-      const slides= [...sec.querySelectorAll('.slide')];
-      const prev  = sec.querySelector('.prev');
-      const next  = sec.querySelector('.next');
       const dotsWrap = sec.querySelector('.dots');
+      let modal = sec.querySelector('#awardsImageModal');
+      const modalImg = modal ? modal.querySelector('.awards-modal-img') : null;
+      const closeBtn = modal ? modal.querySelector('.awards-modal-close') : null;
+      const modalPanel = modal ? modal.querySelector('.awards-modal-panel') : null;
 
-      if(!track || !slides.length || !dotsWrap) return;
+      if (!slider || !track || !dotsWrap) return;
 
-      // Build dots dynamically
-      dotsWrap.innerHTML = slides.map((_,i)=>
-        `<button class="dot" role="tab" aria-selected="${i===0?'true':'false'}"
-                 aria-current="${i===0?'true':'false'}" title="Slide ${i+1}"></button>`
-      ).join('');
-      const dots = [...dotsWrap.querySelectorAll('.dot')];
-
-      const total = slides.length;
-      slides.forEach((s,i)=> s.setAttribute('aria-label', `${i+1} of ${total}`));
-
-      let idx=0, lock=false;
-
-      function go(i){
-        idx = Math.max(0, Math.min(total-1, i));
-        track.scrollTo({ left: slides[idx].offsetLeft - track.offsetLeft, behavior:'smooth' });
-        updateDots();
+      /* Move popup to body so it is never clipped by the section background/overflow. */
+      if (modal && modal.parentNode !== document.body) {
+        document.body.appendChild(modal);
       }
-      function updateDots(){
-        dots.forEach((d,i)=>{
-          const on=i===idx;
-          d.setAttribute('aria-current', on ? 'true' : 'false');
-          d.setAttribute('aria-selected', on ? 'true' : 'false');
+
+      const baseSlides = Array.from(track.querySelectorAll('.slide')).filter(slide => !slide.classList.contains('is-clone'));
+      const total = baseSlides.length;
+      if (total < 2) return;
+
+      const LOOP_SETS = 17;
+      const CENTER_SET = Math.floor(LOOP_SETS / 2);
+      const TRANSITION = 'transform .55s cubic-bezier(.22,.8,.22,1)';
+      const AUTOPLAY_DELAY = 2800;
+      const RESUME_DELAY = 1400;
+      const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+      dotsWrap.innerHTML = baseSlides.map((_, i) =>
+        `<button class="dot" role="tab" aria-selected="${i === 0 ? 'true' : 'false'}" aria-current="${i === 0 ? 'true' : 'false'}" title="Slide ${i + 1}"></button>`
+      ).join('');
+      const dots = Array.from(dotsWrap.querySelectorAll('.dot'));
+
+      const templates = baseSlides.map(slide => slide.cloneNode(true));
+      track.innerHTML = '';
+
+      for (let set = 0; set < LOOP_SETS; set++) {
+        templates.forEach((template, logicalIndex) => {
+          const slide = template.cloneNode(true);
+          slide.classList.add('is-clone');
+          slide.dataset.logicalIndex = String(logicalIndex);
+          slide.dataset.virtualIndex = String((set * total) + logicalIndex);
+          slide.setAttribute('aria-label', (logicalIndex + 1) + ' of ' + total);
+
+          const img = slide.querySelector('img');
+          if (img) {
+            img.draggable = false;
+            img.setAttribute('data-awards-image', 'true');
+          }
+
+          track.appendChild(slide);
         });
       }
-      function nearestIndex(){
-        const x=track.scrollLeft, w=track.clientWidth;
-        return Math.round(x / w);
+
+      let slides = Array.from(track.querySelectorAll('.slide'));
+      let sliderWidth = 0;
+      let slideWidth = 0;
+      let slideGap = 0;
+      let slideStep = 0;
+      let virtualIndex = CENTER_SET * total;
+      let currentTranslateX = 0;
+      let startTranslateX = 0;
+      let startX = 0;
+      let dragStartIndex = virtualIndex;
+      let pointerId = null;
+      let isDragging = false;
+      let moved = false;
+      let tapImage = null;
+      let autoTimer = null;
+      let resumeTimer = null;
+      let resizeTimer = null;
+      let lastModalOpenAt = 0;
+      let lockedScrollY = 0;
+      let previousBodyPosition = '';
+      let previousBodyTop = '';
+      let previousBodyWidth = '';
+
+      function positiveModulo(value, mod){
+        return ((value % mod) + mod) % mod;
       }
 
-      // Buttons
-      prev.addEventListener('click', ()=>{ stop(); go(idx-1); startSoon(); });
-      next.addEventListener('click', ()=>{ stop(); go(idx+1); startSoon(); });
-      dots.forEach((d,i)=> d.addEventListener('click', ()=>{ stop(); go(i); startSoon(); }));
+      function getLogicalIndex(){
+        return positiveModulo(virtualIndex, total);
+      }
 
-      // Keyboard
-      track.addEventListener('keydown', (e)=>{
-        if(e.key==='ArrowRight'){ stop(); go(idx+1); startSoon(); }
-        if(e.key==='ArrowLeft'){  stop(); go(idx-1); startSoon(); }
+      function getTranslateForIndex(index){
+        return (sliderWidth / 2) - ((index * slideStep) + (slideWidth / 2));
+      }
+
+      function getIndexFromTranslate(translateX){
+        if (!slideStep) return virtualIndex;
+        return (((sliderWidth / 2) - (slideWidth / 2)) - translateX) / slideStep;
+      }
+
+      function updateDots(){
+        const active = getLogicalIndex();
+        dots.forEach((dot, i) => {
+          const on = i === active;
+          dot.setAttribute('aria-current', on ? 'true' : 'false');
+          dot.setAttribute('aria-selected', on ? 'true' : 'false');
+        });
+      }
+
+      function isModalOpen(){
+        return modal && modal.classList.contains('is-open');
+      }
+
+      function setTransition(enabled){
+        track.style.transition = enabled ? TRANSITION : 'none';
+      }
+
+      function setTranslate(x){
+        currentTranslateX = x;
+        track.style.transform = 'translate3d(' + x + 'px,0,0)';
+      }
+
+      function updateVisibleAccessibility(){
+        slides.forEach(slide => {
+          const slideVirtualIndex = Number(slide.dataset.virtualIndex || 0);
+          const distance = Math.abs(slideVirtualIndex - virtualIndex);
+
+          if (distance <= 1) {
+            slide.removeAttribute('aria-hidden');
+          } else {
+            slide.setAttribute('aria-hidden', 'true');
+          }
+        });
+        updateDots();
+      }
+
+      function recenterWithoutVisualJump(force){
+        if (!slideStep) return;
+
+        const safeStart = total * 3;
+        const safeEnd = total * (LOOP_SETS - 3);
+
+        if (!force && virtualIndex > safeStart && virtualIndex < safeEnd) {
+          updateVisibleAccessibility();
+          return;
+        }
+
+        const centeredIndex = (CENTER_SET * total) + getLogicalIndex();
+
+        if (virtualIndex === centeredIndex) {
+          updateVisibleAccessibility();
+          return;
+        }
+
+        virtualIndex = centeredIndex;
+        setTransition(false);
+        setTranslate(getTranslateForIndex(virtualIndex));
+        updateVisibleAccessibility();
+
+        requestAnimationFrame(() => {
+          setTransition(true);
+        });
+      }
+
+      function measure(){
+        sliderWidth = slider.getBoundingClientRect().width || sec.clientWidth || window.innerWidth || 1;
+
+        const firstSlide = track.querySelector('.slide');
+        slideWidth = firstSlide ? firstSlide.getBoundingClientRect().width : sliderWidth;
+        const styles = window.getComputedStyle(track);
+        slideGap = parseFloat(styles.columnGap || styles.gap || '0') || 0;
+        slideStep = slideWidth + slideGap;
+
+        setTransition(false);
+        setTranslate(getTranslateForIndex(virtualIndex));
+        updateVisibleAccessibility();
+
+        requestAnimationFrame(() => {
+          setTransition(true);
+        });
+      }
+
+      function goTo(nextIndex, animate){
+        if (!slideStep) measure();
+
+        virtualIndex = nextIndex;
+        setTransition(animate !== false);
+        setTranslate(getTranslateForIndex(virtualIndex));
+        updateVisibleAccessibility();
+      }
+
+      function goToLogical(logicalTarget){
+        const currentLogical = getLogicalIndex();
+        let delta = logicalTarget - currentLogical;
+
+        if (delta > total / 2) delta -= total;
+        if (delta < -total / 2) delta += total;
+
+        goTo(virtualIndex + delta, true);
+      }
+
+      function nextSlide(){
+        goTo(virtualIndex + 1, true);
+      }
+
+      function stopAutoplay(){
+        if (autoTimer) {
+          clearTimeout(autoTimer);
+          autoTimer = null;
+        }
+
+        if (resumeTimer) {
+          clearTimeout(resumeTimer);
+          resumeTimer = null;
+        }
+      }
+
+      function startAutoplay(delay){
+        if (reducedMotion || autoTimer || total < 2 || isDragging || isModalOpen()) return;
+
+        autoTimer = setTimeout(() => {
+          autoTimer = null;
+
+          if (!document.hidden && !isDragging && !isModalOpen()) {
+            nextSlide();
+          }
+
+          startAutoplay(AUTOPLAY_DELAY);
+        }, delay || AUTOPLAY_DELAY);
+      }
+
+      function resumeAutoplay(delay){
+        stopAutoplay();
+        if (reducedMotion || isModalOpen()) return;
+
+        resumeTimer = setTimeout(() => {
+          resumeTimer = null;
+          startAutoplay(AUTOPLAY_DELAY);
+        }, delay || RESUME_DELAY);
+      }
+
+      function normalizeDragTranslate(translateX, dx){
+        if (!slideStep) return translateX;
+
+        const currentFloatIndex = getIndexFromTranslate(translateX);
+        const safeMin = total * 2;
+        const safeMax = total * (LOOP_SETS - 2);
+
+        if (currentFloatIndex > safeMin && currentFloatIndex < safeMax) {
+          return translateX;
+        }
+
+        const centeredFloatIndex = (CENTER_SET * total) + positiveModulo(currentFloatIndex, total);
+        const wrappedTranslateX = getTranslateForIndex(centeredFloatIndex);
+
+        startTranslateX = wrappedTranslateX - dx;
+        return wrappedTranslateX;
+      }
+
+      function lockBackgroundScroll(){
+        lockedScrollY = window.scrollY || document.documentElement.scrollTop || 0;
+        previousBodyPosition = document.body.style.position;
+        previousBodyTop = document.body.style.top;
+        previousBodyWidth = document.body.style.width;
+
+        document.documentElement.classList.add('awards-modal-lock');
+        document.body.classList.add('awards-modal-lock');
+        document.body.style.position = 'fixed';
+        document.body.style.top = '-' + lockedScrollY + 'px';
+        document.body.style.width = '100%';
+      }
+
+      function unlockBackgroundScroll(){
+        document.documentElement.classList.remove('awards-modal-lock');
+        document.body.classList.remove('awards-modal-lock');
+        document.body.style.position = previousBodyPosition;
+        document.body.style.top = previousBodyTop;
+        document.body.style.width = previousBodyWidth;
+        window.scrollTo(0, lockedScrollY);
+      }
+
+      function openModal(img){
+        if (!modal || !modalImg || !img) return;
+
+        stopAutoplay();
+        lastModalOpenAt = Date.now();
+
+        modalImg.src = img.currentSrc || img.src || '';
+        modalImg.alt = img.alt || 'Expanded award image';
+
+        modal.classList.add('is-open');
+        modal.setAttribute('aria-hidden', 'false');
+        lockBackgroundScroll();
+      }
+
+      function closeModal(){
+        if (!modal || !modalImg) return;
+
+        modal.classList.remove('is-open');
+        modal.setAttribute('aria-hidden', 'true');
+        modalImg.src = '';
+
+        unlockBackgroundScroll();
+
+        setTransition(false);
+        setTranslate(getTranslateForIndex(virtualIndex));
+        updateVisibleAccessibility();
+
+        requestAnimationFrame(() => {
+          setTransition(true);
+          resumeAutoplay(RESUME_DELAY);
+        });
+      }
+
+      function pointerDown(e){
+        if (e.pointerType === 'mouse' && e.button !== 0) return;
+
+        stopAutoplay();
+        recenterWithoutVisualJump(true);
+        measure();
+
+        isDragging = true;
+        pointerId = e.pointerId;
+        startX = e.clientX;
+        dragStartIndex = virtualIndex;
+        startTranslateX = getTranslateForIndex(virtualIndex);
+        currentTranslateX = startTranslateX;
+        moved = false;
+        tapImage = e.target.closest('img[data-awards-image]');
+
+        track.classList.add('grabbing', 'is-dragging');
+        setTransition(false);
+
+        try {
+          track.setPointerCapture(pointerId);
+        } catch(err) {}
+      }
+
+      function pointerMove(e){
+        if (!isDragging || e.pointerId !== pointerId) return;
+
+        const dx = e.clientX - startX;
+
+        if (Math.abs(dx) > 6) {
+          moved = true;
+          tapImage = null;
+          e.preventDefault();
+        }
+
+        setTranslate(normalizeDragTranslate(startTranslateX + dx, dx));
+      }
+
+      function finishDrag(e){
+        if (!isDragging || e.pointerId !== pointerId) return;
+
+        let targetIndex = dragStartIndex;
+
+        isDragging = false;
+        track.classList.remove('grabbing', 'is-dragging');
+
+        try {
+          track.releasePointerCapture(pointerId);
+        } catch(err) {}
+
+        pointerId = null;
+
+        if (!moved && tapImage) {
+          setTransition(true);
+          setTranslate(getTranslateForIndex(virtualIndex));
+          openModal(tapImage);
+          tapImage = null;
+          return;
+        }
+
+        if (moved) {
+          targetIndex = Math.round(getIndexFromTranslate(currentTranslateX));
+        }
+
+        tapImage = null;
+        goTo(targetIndex, true);
+        resumeAutoplay(RESUME_DELAY);
+      }
+
+      function cancelDrag(e){
+        if (!isDragging || e.pointerId !== pointerId) return;
+
+        isDragging = false;
+        track.classList.remove('grabbing', 'is-dragging');
+
+        try {
+          track.releasePointerCapture(pointerId);
+        } catch(err) {}
+
+        pointerId = null;
+        tapImage = null;
+
+        goTo(dragStartIndex, true);
+        resumeAutoplay(RESUME_DELAY);
+      }
+
+      track.addEventListener('transitionend', function(e){
+        if (e.propertyName && e.propertyName !== 'transform') return;
+        recenterWithoutVisualJump(false);
       });
 
-      // Sync on scroll end (debounced)
-      track.addEventListener('scroll', ()=>{
-        if(lock) return;
-        lock=true; setTimeout(()=>{ idx=nearestIndex(); updateDots(); lock=false; }, 110);
-      }, {passive:true});
+      track.addEventListener('pointerdown', pointerDown, { passive:true });
+      track.addEventListener('pointermove', pointerMove, { passive:false });
+      track.addEventListener('pointerup', finishDrag, { passive:true });
+      track.addEventListener('pointercancel', cancelDrag, { passive:true });
+      track.addEventListener('dragstart', e => e.preventDefault());
 
-      /* ===== Drag / Swipe support ===== */
-      let isDown=false, startX=0, startScroll=0;
-      const THRESHOLD = 60; // px to consider a swipe to next/prev
-
-      function getClientX(e){
-        if(e.clientX != null) return e.clientX;
-        if(e.touches && e.touches[0]) return e.touches[0].clientX;
-        if(e.changedTouches && e.changedTouches[0]) return e.changedTouches[0].clientX;
-        return 0;
-      }
-
-      function onPointerDown(e){
-        isDown=true;
-        track.classList.add('grabbing');
-        startX = getClientX(e);
-        startScroll = track.scrollLeft;
-        stop();
-      }
-      function onPointerMove(e){
-        if(!isDown) return;
-        const x = getClientX(e);
-        const dx = startX - x;
-        track.scrollLeft = startScroll + dx; // drag the track
-      }
-      function onPointerUp(e){
-        if(!isDown) return;
-        isDown=false; track.classList.remove('grabbing');
-        const x = getClientX(e);
-        const dx = startX - x;
-        if(Math.abs(dx) > THRESHOLD){
-          if(dx > 0) go(idx+1); else go(idx-1);
-        }else{
-          // Snap to nearest slide
-          go(nearestIndex());
+      track.addEventListener('click', function(e){
+        if (Date.now() - lastModalOpenAt < 450 || moved) {
+          e.preventDefault();
+          e.stopPropagation();
+          e.stopImmediatePropagation();
+          return;
         }
-        startSoon();
+
+        const img = e.target.closest('img[data-awards-image]');
+        if (!img) return;
+
+        e.preventDefault();
+        e.stopPropagation();
+        openModal(img);
+      }, true);
+
+      track.addEventListener('keydown', function(e){
+        if (e.key === 'ArrowRight') {
+          e.preventDefault();
+          stopAutoplay();
+          goTo(virtualIndex + 1, true);
+          resumeAutoplay(RESUME_DELAY);
+        }
+
+        if (e.key === 'ArrowLeft') {
+          e.preventDefault();
+          stopAutoplay();
+          goTo(virtualIndex - 1, true);
+          resumeAutoplay(RESUME_DELAY);
+        }
+      });
+
+      dots.forEach((dot, i) => {
+        dot.addEventListener('click', function(e){
+          e.preventDefault();
+          stopAutoplay();
+          goToLogical(i);
+          resumeAutoplay(RESUME_DELAY);
+        });
+      });
+
+      if (closeBtn) {
+        closeBtn.addEventListener('click', function(e){
+          e.preventDefault();
+          e.stopPropagation();
+          closeModal();
+        });
       }
 
-      // Mouse / touch events
-      track.addEventListener('pointerdown', onPointerDown);
-      window.addEventListener('pointermove', onPointerMove, {passive:true});
-      window.addEventListener('pointerup', onPointerUp, {passive:true});
-      track.addEventListener('touchstart', onPointerDown, {passive:true});
-      track.addEventListener('touchmove', onPointerMove, {passive:true});
-      track.addEventListener('touchend', onPointerUp, {passive:true});
-
-      // Prevent accidental text selection while dragging (safari)
-      track.addEventListener('dragstart', e=>e.preventDefault());
-
-      /* ===== Faster autoplay (≈2.8s) and smarter resume ===== */
-      const autoPlayAllowed = !matchMedia('(prefers-reduced-motion: reduce)').matches && total > 1;
-      let timer=null, resumeTimer=null;
-
-      function start(){
-        if(timer || !autoPlayAllowed) return;
-        timer = setTimeout(function tick(){
-          go((idx+1) % total);
-          timer = setTimeout(tick, 2800);
-        }, 2800);
-      }
-      function stop(){
-        if(timer){ clearTimeout(timer); timer=null; }
-        if(resumeTimer){ clearTimeout(resumeTimer); resumeTimer=null; }
-      }
-      function startSoon(){
-        if(!autoPlayAllowed) return;
-        if(resumeTimer) clearTimeout(resumeTimer);
-        resumeTimer = setTimeout(()=>{ start(); }, 900);
+      if (modal && modalPanel) {
+        modal.addEventListener('click', function(e){
+          if (!modalPanel.contains(e.target)) {
+            closeModal();
+          }
+        });
       }
 
-      // Pause when hovering/touching the track
-      track.addEventListener('pointerenter', stop);
-      track.addEventListener('pointerleave', startSoon);
+      window.addEventListener('keydown', function(e){
+        if (e.key === 'Escape' && isModalOpen()) {
+          closeModal();
+        }
+      });
 
-      // Init
-      updateDots();
-      start();
+      window.addEventListener('resize', () => {
+        clearTimeout(resizeTimer);
+        resizeTimer = setTimeout(() => {
+          recenterWithoutVisualJump(true);
+          measure();
+        }, 150);
+      }, { passive:true });
+
+      document.addEventListener('visibilitychange', () => {
+        if (document.hidden) {
+          stopAutoplay();
+        } else {
+          resumeAutoplay(RESUME_DELAY);
+        }
+      });
+
+      measure();
+      startAutoplay(AUTOPLAY_DELAY);
     })();
   </script>
 </section>
+
 
 <section id="gamusa-road"> <style> /* Assamese Gamusa "road" — uses your real Gamusa artwork as a repeating strip */ /* 🔁 Replace the example URL below with your ONLINE image link (PNG/JPG/SVG) of the pattern */ #gamusa-road{ --img: url("static/gamu.jpeg"); }
 #gamusa-road{position:relative;margin:0;padding:0}
@@ -1012,387 +1639,9 @@
 
 </style> <!-- Moving Gamusa road (change --img in the style above to your actual online link) --> <div class="lane" aria-hidden="true"></div> </section>
 
-</style> <!-- The moving Gamusa "road" --> <div class="track" aria-hidden="true"></div> </section>
 
 
-<section id="ne-locals" aria-labelledby="ne-locals-title">
-  <style>
-    /* ===== Scoped tokens (inherit your site vars) ===== */
-    #ne-locals{
-      --bg:#f6f4ed;
-      --ink:#37392f;
-      --muted:#988e87;
-      --red:#b33f36;
-      --radius:16px;
-      --maxw:1200px;
-      --shadow:0 10px 30px rgba(0,0,0,.08);
-      color:var(--ink);
-      background:var(--bg);
-      position:relative;
-      overflow:clip;
-    }
-    #ne-locals .wrap{ width:min(100%,var(--maxw)); margin-inline:auto; padding:clamp(34px,6vw,72px) clamp(16px,4vw,28px); }
 
-    /* ===== Header ===== */
-    #ne-locals .eyebrow{
-      display:inline-flex; align-items:center; gap:10px;
-      font-weight:700; letter-spacing:.08em; text-transform:uppercase;
-      color:var(--muted); font-size:12px; margin-bottom:8px;
-    }
-    #ne-locals .eyebrow::before,#ne-locals .eyebrow::after{
-      content:""; width:20px; height:2px; background:currentColor; opacity:.3;
-    }
-    #ne-locals .title{
-      font-family:"Bebas Neue", Inter, ui-sans-serif;
-      font-size:clamp(32px,6vw,68px); letter-spacing:1px; line-height:.95; text-transform:uppercase;
-      text-shadow:0 2px 0 rgba(255,255,255,.45);
-      margin:0 0 8px;
-    }
-    #ne-locals .sub{ color:var(--muted); max-width:60ch; font-size:15px; margin:0 0 16px; }
-
-    /* ===== Carousel (frameless) ===== */
-    #ne-locals .slider{ position:relative; margin-top:12px; background:transparent; border:none; box-shadow:none; padding:0; }
-    #ne-locals .track{
-      display:grid; grid-auto-flow:column; grid-auto-columns:100%;
-      overflow-x:auto; overscroll-behavior-x:contain;
-      scroll-snap-type:x mandatory; scroll-behavior:smooth;
-      -webkit-overflow-scrolling:touch;
-      gap:0; scrollbar-width:none;
-      cursor:grab;
-      user-select:none;
-      -webkit-user-select:none;
-      touch-action:pan-x pinch-zoom; /* smoother swipes on mobile */
-    }
-    #ne-locals .track.grabbing{ cursor:grabbing; }
-    #ne-locals .track::-webkit-scrollbar{ display:none; }
-
-    #ne-locals .slide{ position:relative; scroll-snap-align:center; outline:none; }
-    #ne-locals figure{
-      margin:0; background:transparent; border:none; overflow:hidden;
-      display:grid; grid-template-rows:auto auto; gap:0; border-radius:var(--radius);
-    }
-    #ne-locals .media{
-      aspect-ratio:16 / 9; background:#fff; display:grid; place-items:center; overflow:hidden; border-radius:var(--radius);
-    }
-    #ne-locals .media img{
-      width:100%; height:100%; object-fit:cover; object-position:center;
-      transition:transform .45s ease, filter .45s ease; display:block;
-      pointer-events:none; /* prevent image from intercepting drags */
-    }
-    #ne-locals figure:hover .media img{ transform:scale(1.02); }
-    #ne-locals figcaption{ padding:12px 8px; display:flex; align-items:center; justify-content:space-between; gap:10px; }
-    #ne-locals .cap-left{ display:grid; gap:4px; }
-    #ne-locals .cap-title{
-      font-family:"Bebas Neue", Inter, ui-sans-serif;
-      font-size:clamp(20px,2.6vw,28px); letter-spacing:.6px; line-height:1; text-transform:uppercase;
-    }
-    #ne-locals .cap-sub{ color:var(--muted); font-size:13px; }
-
-    /* ===== Controls ===== */
-    #ne-locals .ctrl{
-      position:absolute; inset:auto 8px 50% 8px; translate:0 50%;
-      display:flex; justify-content:space-between; pointer-events:none;
-    }
-    #ne-locals .btn{
-      pointer-events:auto; border:1px solid #111; background:#fff; color:#111;
-      width:44px; height:44px; border-radius:999px; display:grid; place-items:center;
-      box-shadow:0 10px 24px rgba(0,0,0,.10);
-      transition:transform .12s ease, filter .12s ease;
-    }
-    #ne-locals .btn:hover{ transform:translateY(-1px); filter:saturate(1.05); }
-    #ne-locals .btn:active{ transform:none; }
-    #ne-locals .btn svg{ width:18px; height:18px; }
-
-    /* Dots */
-    #ne-locals .dots{ display:flex; gap:8px; justify-content:center; align-items:center; padding:12px 0 6px; }
-    #ne-locals .dot{
-      width:8px; height:8px; border-radius:999px; background:#cfc9c2; border:0; padding:0; cursor:pointer;
-      transition:transform .12s ease, background .2s ease;
-    }
-    #ne-locals .dot[aria-current="true"]{ background:var(--red); transform:scale(1.4); }
-
-    /* CTA */
-    #ne-locals .cta{
-      display:inline-flex; align-items:center; justify-content:center; gap:10px;
-      margin-top:14px; background:var(--red); color:#fff; text-decoration:none;
-      padding:12px 18px; border-radius:999px; font-weight:900; letter-spacing:.04em;
-      box-shadow:0 6px 16px rgba(179,63,54,.28);
-      transition: transform .18s ease, background .18s ease, box-shadow .18s ease;
-    }
-    #ne-locals .cta:hover{ transform:translateY(-1px); box-shadow:0 10px 20px rgba(179,63,54,.30); }
-    #ne-locals .cta:active{ transform:translateY(0); }
-
-    /* Reveal helper */
-    #ne-locals .reveal{ opacity:0; transform:translateY(16px); transition:opacity .6s ease, transform .6s ease; }
-    #ne-locals .in{ opacity:1; transform:none; }
-
-    /* Responsive */
-    @media (max-width:980px){ #ne-locals .ctrl{ inset:auto 6px 50% 6px; } }
-    @media (max-width:720px){
-      #ne-locals .wrap{ padding-bottom:28px; }
-      #ne-locals .btn{ width:40px; height:40px; }
-      #ne-locals .media{ aspect-ratio:4 / 3; }
-    }
-  </style>
-
-  <div class="wrap">
-    <header class="reveal">
-      <div class="eyebrow" aria-hidden="true">OUR STORE</div>
-      <h2 id="ne-locals-title" class="title">NE&nbsp;LOCALS</h2>
-      <p class="sub">A quick peek inside our NE&nbsp;LOCALS store</p>
-    </header>
-
-    <div class="slider reveal">
-      <!-- Controls -->
-      <div class="ctrl" aria-hidden="true">
-        <button class="btn prev" type="button" aria-label="Previous">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>
-        </button>
-        <button class="btn next" type="button" aria-label="Next">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 6l6 6-6 6"/></svg>
-        </button>
-      </div>
-
-      <!-- Track -->
-      <div class="track" role="region" aria-roledescription="carousel" aria-label="NE LOCALS store gallery" tabindex="0">
-        <!-- Slide 1 -->
-        <div class="slide" role="group" aria-roledescription="slide" aria-label="1 of 6">
-          <figure>
-            <div class="media"><img src="static/store1.jpg" alt="NE LOCALS storefront — exterior view"></div>
-            <figcaption><div class="cap-left"><div class="cap-title">Storefront</div><div class="cap-sub">Exterior — welcome to NE LOCALS</div></div></figcaption>
-          </figure>
-        </div>
-        <!-- Slide 2 -->
-        <div class="slide" role="group" aria-roledescription="slide" aria-label="2 of 6">
-          <figure>
-            <div class="media"><img src="static/store5.jpg" alt="Interior racks with local products"></div>
-            <figcaption><div class="cap-left"><div class="cap-title">Inside Aisles</div><div class="cap-sub">Curated local products</div></div></figcaption>
-          </figure>
-        </div>
-        <!-- Slide 3 -->
-        <div class="slide" role="group" aria-roledescription="slide" aria-label="3 of 6">
-          <figure>
-            <div class="media"><img src="static/store4.jpg" alt="Checkout counter at NE LOCALS"></div>
-            <figcaption><div class="cap-left"><div class="cap-title">Checkout</div><div class="cap-sub">Fast & friendly service</div></div></figcaption>
-          </figure>
-        </div>
-        <!-- Slide 4 -->
-        <div class="slide" role="group" aria-roledescription="slide" aria-label="4 of 6">
-          <figure>
-            <div class="media"><img src="static/store3.jpg" alt="Fresh produce section"></div>
-            <figcaption><div class="cap-left"><div class="cap-title">Fresh Produce</div><div class="cap-sub">From trusted NE growers</div></div></figcaption>
-          </figure>
-        </div>
-        <!-- Slide 5 -->
-        <div class="slide" role="group" aria-roledescription="slide" aria-label="5 of 6">
-          <figure>
-            <div class="media"><img src="static/store2.jpg" alt="Spices & staples display"></div>
-            <figcaption><div class="cap-left"><div class="cap-title">EVERYDAY ESSENTIALS</div><div class="cap-sub">Now Accessible</div></div></figcaption>
-          </figure>
-        </div>
-        <!-- Slide 6 -->
-        <div class="slide" role="group" aria-roledescription="slide" aria-label="6 of 6">
-          <figure>
-            <div class="media"><img src="static/store6.jpg" alt="Additional store image"></div>
-            <figcaption><div class="cap-left"><div class="cap-title">Store's Building Upfront</div><div class="cap-sub">The Building</div></div></figcaption>
-          </figure>
-        </div>
-      </div>
-
-      <!-- Dots -->
-      <div class="dots" role="tablist" aria-label="Slides"></div>
-    </div>
-
-    <!-- Optional CTA -->
-    <a class="cta magnet" href="/products">Explore NE-LOCALS Products</a>
-  </div>
-
-  <script>
-    // Reveal-on-scroll
-    (function(){
-      const root=document.getElementById('ne-locals');
-      if(!root) return;
-      const els=[...root.querySelectorAll('.reveal')];
-      if(!('IntersectionObserver' in window)){ els.forEach(el=>el.classList.add('in')); return; }
-      const io=new IntersectionObserver((entries)=>{
-        entries.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); } });
-      },{threshold:.12});
-      els.forEach(el=>io.observe(el));
-    })();
-
-    // Carousel with faster autoplay + drag/swipe
-    (function(){
-      const sec   = document.getElementById('ne-locals');
-      const track = sec.querySelector('.track');
-      const slides= [...sec.querySelectorAll('.slide')];
-      const prev  = sec.querySelector('.prev');
-      const next  = sec.querySelector('.next');
-      const dotsWrap = sec.querySelector('.dots');
-
-      // Build dots dynamically
-      dotsWrap.innerHTML = slides.map((_,i)=>
-        `<button class="dot" role="tab" aria-selected="${i===0?'true':'false'}"
-                 aria-current="${i===0?'true':'false'}" title="Slide ${i+1}"></button>`
-      ).join('');
-      const dots = [...dotsWrap.querySelectorAll('.dot')];
-
-      const total = slides.length;
-      slides.forEach((s,i)=> s.setAttribute('aria-label', `${i+1} of ${total}`));
-
-      let idx=0, lock=false;
-
-      function go(i){
-        idx = Math.max(0, Math.min(total-1, i));
-        track.scrollTo({ left: slides[idx].offsetLeft - track.offsetLeft, behavior:'smooth' });
-        updateDots();
-      }
-      function updateDots(){
-        dots.forEach((d,i)=>{
-          const on=i===idx;
-          d.setAttribute('aria-current', on ? 'true' : 'false');
-          d.setAttribute('aria-selected', on ? 'true' : 'false');
-        });
-      }
-      function nearestIndex(){
-        const x=track.scrollLeft, w=track.clientWidth;
-        return Math.round(x / w);
-      }
-
-      // Buttons
-      prev.addEventListener('click', ()=>{ stop(); go(idx-1); startSoon(); });
-      next.addEventListener('click', ()=>{ stop(); go(idx+1); startSoon(); });
-      dots.forEach((d,i)=> d.addEventListener('click', ()=>{ stop(); go(i); startSoon(); }));
-
-      // Keyboard
-      track.addEventListener('keydown', (e)=>{
-        if(e.key==='ArrowRight'){ stop(); go(idx+1); startSoon(); }
-        if(e.key==='ArrowLeft'){  stop(); go(idx-1); startSoon(); }
-      });
-
-      // Sync on scroll end (debounced)
-      track.addEventListener('scroll', ()=>{
-        if(lock) return;
-        lock=true; setTimeout(()=>{ idx=nearestIndex(); updateDots(); lock=false; }, 110);
-      }, {passive:true});
-
-      /* ===== Drag / Swipe support ===== */
-      let isDown=false, startX=0, startScroll=0, moved=false;
-      const THRESHOLD = 60; // px to consider a swipe to next/prev
-
-      function onPointerDown(e){
-        isDown=true; moved=false;
-        track.classList.add('grabbing');
-        startX = e.clientX ?? (e.touches && e.touches[0].clientX) ?? 0;
-        startScroll = track.scrollLeft;
-        stop();
-      }
-      function onPointerMove(e){
-        if(!isDown) return;
-        const x = e.clientX ?? (e.touches && e.touches[0].clientX) ?? 0;
-        const dx = startX - x;
-        if(Math.abs(dx) > 2) moved=true;
-        track.scrollLeft = startScroll + dx; // drag the track
-      }
-      function onPointerUp(e){
-        if(!isDown) return;
-        isDown=false; track.classList.remove('grabbing');
-        const x = (e.changedTouches && e.changedTouches[0].clientX) ?? e.clientX ?? startX;
-        const dx = startX - x;
-        if(Math.abs(dx) > THRESHOLD){
-          if(dx > 0) go(idx+1); else go(idx-1);
-        }else{
-          // Snap to nearest slide
-          go(nearestIndex());
-        }
-        startSoon();
-      }
-
-      // Mouse / touch events
-      track.addEventListener('pointerdown', onPointerDown);
-      window.addEventListener('pointermove', onPointerMove, {passive:true});
-      window.addEventListener('pointerup', onPointerUp, {passive:true});
-      track.addEventListener('touchstart', onPointerDown, {passive:true});
-      track.addEventListener('touchmove', onPointerMove, {passive:true});
-      track.addEventListener('touchend', onPointerUp, {passive:true});
-
-      // Prevent accidental text selection while dragging (safari)
-      track.addEventListener('dragstart', e=>e.preventDefault());
-
-      /* ===== Faster autoplay (≈2.8s) and smarter resume ===== */
-      const autoPlayAllowed = !matchMedia('(prefers-reduced-motion: reduce)').matches && total > 1;
-      let timer=null, resumeTimer=null;
-
-      function start(){
-        if(timer || !autoPlayAllowed) return;
-        timer = setTimeout(function tick(){
-          go((idx+1) % total);
-          timer = setTimeout(tick, 2800);
-        }, 2800);
-      }
-      function stop(){ if(timer){ clearTimeout(timer); timer=null; } if(resumeTimer){ clearTimeout(resumeTimer); resumeTimer=null; } }
-      function startSoon(){
-        if(!autoPlayAllowed) return;
-        if(resumeTimer) clearTimeout(resumeTimer);
-        resumeTimer = setTimeout(()=>{ start(); }, 900);
-      }
-
-      // Pause when hovering/touching the track
-      track.addEventListener('pointerenter', stop);
-      track.addEventListener('pointerleave', startSoon);
-
-      // Init
-      updateDots();
-      start();
-    })();
-  </script>
-</section>
-
-<section id="gamusa-road"> <style> /* Assamese Gamusa "road" — uses your real Gamusa artwork as a repeating strip */ /* 🔁 Replace the example URL below with your ONLINE image link (PNG/JPG/SVG) of the pattern */ #gamusa-road{ --img: url("static/gamu.jpeg"); }
-#gamusa-road{position:relative;margin:0;padding:0}
-#gamusa-road .lane{
-  position:relative; width:100%; height:56px; overflow:hidden;
-  /* red rails like woven borders */
-  background:
-    linear-gradient(#b30000,#b30000) top/100% 3px no-repeat,
-    linear-gradient(#b30000,#b30000) bottom/100% 3px no-repeat,
-    #fff;
-  box-shadow: inset 0 8px 16px rgba(0,0,0,.04), inset 0 -8px 16px rgba(0,0,0,.04);
-}
-
-/* The moving Gamusa artwork */
-#gamusa-road .lane::after{
-  content:""; position:absolute; left:0; right:0; top:3px; bottom:3px;
-  background-image: var(--img);
-  background-repeat: repeat-x;        /* continuous like a road */
-  background-position: 0 50%;
-  background-size: auto 100%;         /* scale image height to fit strip */
-  animation: gamusa-move 12s linear infinite;
-  /* optional subtle fabric texture overlay */
-  mix-blend-mode: normal;
-}
-
-/* gentle edge fade so the loop feels seamless on some images */
-#gamusa-road .lane::before{
-  content:""; position:absolute; inset:3px 0;
-  pointer-events:none;
-  -webkit-mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
-          mask-image: linear-gradient(90deg, transparent, #000 8%, #000 92%, transparent);
-  background: rgba(255,255,255,.0);
-}
-
-@keyframes gamusa-move{
-  from { background-position: 0 50%; }
-  to   { background-position: -1200px 50%; } /* adjust speed by changing distance/time */
-}
-
-/* Slimmer on mobile if you want */
-@media (max-width:720px){
-  #gamusa-road .lane{ height:44px; }
-}
-
-</style> <!-- Moving Gamusa road (change --img in the style above to your actual online link) --> <div class="lane" aria-hidden="true"></div> </section>
-
-</style> <!-- The moving Gamusa "road" --> <div class="track" aria-hidden="true"></div> </section>
 
   <!-- Best Sellers Section (unchanged design below) -->
   <section id="tmg-best-sellers" aria-labelledby="tmg-best-sellers-title">
@@ -1676,7 +1925,6 @@
 
 </style> <!-- Moving Gamusa road (change --img in the style above to your actual online link) --> <div class="lane" aria-hidden="true"></div> </section>
 
-</style> <!-- The moving Gamusa "road" --> <div class="track" aria-hidden="true"></div> </section>
 
 <!-- Freshness Guarantee -->
 <section id="freshness" aria-labelledby="freshness-title">
@@ -1963,7 +2211,6 @@
 
 </style> <!-- Moving Gamusa road (change --img in the style above to your actual online link) --> <div class="lane" aria-hidden="true"></div> </section>
 
-</style> <!-- The moving Gamusa "road" --> <div class="track" aria-hidden="true"></div> </section>
 
 
 <section id="entrepreneurs" aria-labelledby="entrepreneurs-title">
@@ -2344,13 +2591,12 @@
 
 </style> <!-- Moving Gamusa road (change --img in the style above to your actual online link) --> <div class="lane" aria-hidden="true"></div> </section>
 
-</style> <!-- The moving Gamusa "road" --> <div class="track" aria-hidden="true"></div> </section>
 
 
 
+{% if testimonials %}
 <section id="testimonials" aria-labelledby="testimonials-title">
   <style>
-    /* ===== Testimonials (scoped to this section) ===== */
     #testimonials{
       --bg:#f6f4ed;
       --ink:#37392f;
@@ -2365,18 +2611,19 @@
       position:relative;
       overflow:clip;
     }
+
     #testimonials .ts-wrap{
       width:min(100%,var(--maxw));
       margin-inline:auto;
       padding:clamp(36px,6vw,72px) clamp(16px,4vw,28px);
     }
 
-    /* Header */
     #testimonials .ts-header{
       display:grid;
       gap:10px;
       margin-bottom:clamp(22px,3vw,32px);
     }
+
     #testimonials .ts-eyebrow{
       display:inline-flex;
       align-items:center;
@@ -2387,6 +2634,7 @@
       color:var(--muted);
       font-size:12px;
     }
+
     #testimonials .ts-eyebrow::before,
     #testimonials .ts-eyebrow::after{
       content:"";
@@ -2395,146 +2643,105 @@
       background:currentColor;
       opacity:.3;
     }
+
     #testimonials .ts-title{
       font-family:"Bebas Neue", Inter, ui-sans-serif;
-      font-size:clamp(32px,6vw,68px);
+      font-size:clamp(36px,6vw,74px);
       letter-spacing:1px;
-      line-height:.95;
+      line-height:.92;
       text-transform:uppercase;
-      text-shadow:0 2px 0 rgba(255,255,255,.45);
       margin:0;
+      color:var(--ink);
     }
+
     #testimonials .ts-sub{
+      max-width:680px;
       color:var(--muted);
-      max-width:60ch;
       font-size:15px;
+      line-height:1.6;
       margin:0;
     }
 
-    /* Soft background glow */
-    #testimonials .ts-glow{
-      position:absolute;
-      inset:-20% -30% auto -30%;
-      height:320px;
-      z-index:-1;
-      background:
-        radial-gradient(700px 260px at 70% 40%, rgba(255,210,180,.24), transparent 60%),
-        radial-gradient(540px 260px at 15% 75%, rgba(255,240,210,.18), transparent 60%);
-      filter:saturate(1.05);
-    }
-
-    /* Grid / layout */
     #testimonials .ts-grid{
       display:grid;
-      gap:clamp(16px,2.4vw,24px);
-      grid-template-columns:2fr 1.4fr;
-      align-items:stretch;
-    }
-    #testimonials .ts-col{
-      display:grid;
-      gap:clamp(14px,1.6vw,18px);
+      grid-template-columns:repeat(2, minmax(0, 1fr));
+      gap:clamp(18px,3vw,28px);
+      align-items:start;
     }
 
-    @media (max-width:980px){
-      #testimonials .ts-grid{
-        grid-template-columns:1fr;
-      }
-    }
-
-    /* Cards */
     #testimonials .ts-card{
       background:#fff;
+      border:1px solid rgba(0,0,0,.06);
       border-radius:var(--radius);
-      border:1px solid rgba(0,0,0,.05);
       box-shadow:var(--shadow);
-      padding:18px 18px 20px;
+      padding:clamp(20px,3vw,30px);
       display:grid;
-      grid-template-columns:auto 1fr;
-      column-gap:14px;
-      row-gap:8px;
-      align-items:flex-start;
-      position:relative;
-      overflow:hidden;
-      transform:translateZ(0);
-      transition:
-        transform .22s ease,
-        box-shadow .22s ease,
-        border-color .22s ease,
-        background .22s ease;
-    }
-    #testimonials .ts-card--primary{
-      padding:22px 22px 24px;
-      grid-template-columns:auto 1fr;
-    }
-    #testimonials .ts-card::before{
-      /* subtle diagonal highlight */
-      content:"";
-      position:absolute;
-      inset:-40% 40% 20% -40%;
-      background:linear-gradient(120deg, rgba(179,63,54,.04), transparent 60%);
-      opacity:0;
-      pointer-events:none;
-      transition:opacity .25s ease, transform .25s ease;
-      transform:translateX(-8%);
-    }
-    #testimonials .ts-card:hover{
-      transform:translateY(-3px);
-      box-shadow:0 16px 32px rgba(0,0,0,.12);
-      border-color:rgba(179,63,54,.22);
-      background:linear-gradient(135deg,#ffffff,#fff7f3);
-    }
-    #testimonials .ts-card:hover::before{
-      opacity:1;
-      transform:translateX(0);
+      grid-template-columns:64px 1fr;
+      gap:18px;
+      align-content:start;
+      align-self:start;
+      height:auto;
     }
 
-    /* Quote icon “puck” */
+    #testimonials .ts-card--primary{
+      grid-column:1 / -1;
+      min-height:260px;
+      padding:clamp(28px,4vw,46px);
+      grid-template-columns:74px 1fr;
+      align-items:start;
+    }
+
+    #testimonials .ts-card--primary .ts-quote{
+      font-size:clamp(22px,2.4vw,34px);
+      line-height:1.55;
+      max-width:980px;
+    }
+
+    #testimonials .ts-card--primary .ts-meta{
+      margin-top:24px;
+    }
+
     #testimonials .ts-ico{
       width:52px;
       height:52px;
-      border-radius:18px;
+      border-radius:16px;
       display:grid;
       place-items:center;
-      background:linear-gradient(180deg, rgba(179,63,54,.12), rgba(179,63,54,.06));
-      border:1px solid rgba(179,63,54,.24);
-      box-shadow:inset 0 1px 0 rgba(255,255,255,.65);
-      position:relative;
-      overflow:hidden;
-    }
-    #testimonials .ts-ico svg{
-      width:26px;
-      height:26px;
-      stroke:var(--red);
-      fill:none;
-      stroke-width:1.6;
-    }
-    /* floating micro animation */
-    #testimonials .ts-card:hover .ts-ico{
-      animation:ts-float 2.2s ease-in-out infinite;
-    }
-    @keyframes ts-float{
-      0%,100%{ transform:translateY(0); }
-      50%{ transform:translateY(-4px); }
+      background:rgba(179,63,54,.06);
+      border:1px solid rgba(179,63,54,.18);
+      color:var(--red);
     }
 
-    /* Text block */
-    #testimonials .ts-body{
-      display:grid;
-      gap:6px;
+    #testimonials .ts-card--primary .ts-ico{
+      width:64px;
+      height:64px;
+      border-radius:18px;
     }
+
+    #testimonials .ts-ico svg{
+      width:28px;
+      height:28px;
+      fill:none;
+      stroke:currentColor;
+      stroke-width:1.8;
+    }
+
     #testimonials .ts-quote{
-      font-size:14px;
-      line-height:1.6;
+      font-size:clamp(16px,1.6vw,18px);
+      line-height:1.7;
       color:var(--ink);
+      white-space:pre-line;
     }
+
     #testimonials .ts-meta{
       display:flex;
       flex-wrap:wrap;
       gap:6px 10px;
       align-items:center;
-      margin-top:4px;
+      margin-top:18px;
       font-size:13px;
     }
+
     #testimonials .ts-name{
       font-weight:800;
       text-transform:uppercase;
@@ -2542,9 +2749,11 @@
       font-size:11px;
       color:var(--red);
     }
+
     #testimonials .ts-role{
       color:var(--muted);
     }
+
     #testimonials .ts-tag{
       padding:3px 8px;
       border-radius:999px;
@@ -2557,7 +2766,6 @@
       background:rgba(14,122,97,.04);
     }
 
-    /* Highlight strip in the big card */
     #testimonials .ts-ribbon{
       display:inline-flex;
       align-items:center;
@@ -2571,8 +2779,9 @@
       font-weight:700;
       letter-spacing:.08em;
       text-transform:uppercase;
-      margin-bottom:6px;
+      margin-bottom:14px;
     }
+
     #testimonials .ts-ribbon-dot{
       width:6px;
       height:6px;
@@ -2580,18 +2789,27 @@
       background:var(--red);
     }
 
-    /* Reveal-on-scroll */
     #testimonials .ts-reveal{
       opacity:0;
       transform:translateY(18px);
-      transition:
-        opacity .6s ease,
-        transform .6s ease;
+      transition:opacity .6s ease, transform .6s ease;
       transition-delay:var(--ts-delay,0ms);
     }
+
     #testimonials .ts-in{
       opacity:1;
       transform:translateY(0);
+    }
+
+    @media (max-width:900px){
+      #testimonials .ts-grid{
+        grid-template-columns:1fr;
+      }
+
+      #testimonials .ts-card--primary{
+        grid-column:auto;
+        min-height:auto;
+      }
     }
 
     @media (max-width:720px){
@@ -2599,6 +2817,7 @@
       #testimonials .ts-card--primary{
         grid-template-columns:1fr;
       }
+
       #testimonials .ts-ico{
         margin-bottom:4px;
       }
@@ -2606,8 +2825,6 @@
   </style>
 
   <div class="ts-wrap">
-    <div class="ts-glow" aria-hidden="true"></div>
-
     <header class="ts-header ts-reveal">
       <div class="ts-eyebrow">WHAT OUR PARTNERS SAY</div>
       <h2 id="testimonials-title" class="ts-title">Voices from the field</h2>
@@ -2617,96 +2834,93 @@
     </header>
 
     <div class="ts-grid">
-      <!-- LEFT: Featured testimonial -->
-      <div class="ts-col">
+      {% if featured_testimonial %}
         <article class="ts-card ts-card--primary ts-reveal">
           <div class="ts-ico" aria-hidden="true">
-            <!-- quote icon -->
             <svg viewBox="0 0 24 24">
-              <path d="M9.5 7C7.6 7 6 8.6 6 10.5c0 1.4.8 2.5 2.1 3L7 18h4l1.3-4.1A3.9 3.9 0 0 0 14 10.5C14 8.6 12.4 7 10.5 7h-1z"/>
-              <path d="M17.5 7C15.6 7 14 8.6 14 10.5c0 1.4.8 2.5 2.1 3L15 18h4l1.3-4.1A3.9 3.9 0 0 0 22 10.5C22 8.6 20.4 7 18.5 7h-1z"/>
+              <path d="M9.5 7C7.6 7 6 8.6 6 10.5c0 1.4.8 2.6 2 3.1V17h4v-6.5C12 8.6 10.9 7 9.5 7z"/>
+              <path d="M17.5 7C15.6 7 14 8.6 14 10.5c0 1.4.8 2.6 2 3.1V17h4v-6.5C20 8.6 18.9 7 17.5 7z"/>
             </svg>
           </div>
-          <div class="ts-body">
-            <div class="ts-ribbon">
-              <span class="ts-ribbon-dot" aria-hidden="true"></span>
-              FROM IDEA TO SHELF
+
+          <div>
+            {% if featured_testimonial.ribbon %}
+              <div class="ts-ribbon">
+                <span class="ts-ribbon-dot"></span>
+                {{ featured_testimonial.ribbon }}
+              </div>
+            {% endif %}
+
+            <div class="ts-quote">
+              “{{ featured_testimonial.quote }}”
             </div>
-            <p class="ts-quote">
-              “We walked in with only a home recipe and a dream. Ayanant helped us with branding, packaging, and the right compliance so that our product could confidently sit on shelves as <em>‘NE&nbsp;LOCALS’</em>. The team is patient, practical, and deeply rooted in the realities of rural businesses.”
-            </p>
+
             <div class="ts-meta">
-              <span class="ts-name">RURAL ENTREPRENEUR</span>
-              <span class="ts-role">Women-led enterprise · Assam</span>
-              <span class="ts-tag">Branding &amp; packaging support</span>
+              <span class="ts-name">{{ featured_testimonial.person_name }}</span>
+
+              <span class="ts-role">
+                {{ featured_testimonial.role_title }}
+                {% if featured_testimonial.organization %}
+                  · {{ featured_testimonial.organization }}
+                {% endif %}
+                {% if featured_testimonial.location %}
+                  · {{ featured_testimonial.location }}
+                {% endif %}
+              </span>
+
+              {% if featured_testimonial.tag %}
+                <span class="ts-tag">{{ featured_testimonial.tag }}</span>
+              {% endif %}
             </div>
           </div>
         </article>
-      </div>
+      {% endif %}
 
-      <!-- RIGHT: Two stacked testimonials (easy to extend later) -->
-      <div class="ts-col">
-        <!-- Testimonial 2 -->
-        <article class="ts-card ts-reveal">
+      {% for t in normal_testimonials %}
+        <article class="ts-card ts-reveal" style="--ts-delay:{{ loop.index * 80 }}ms">
           <div class="ts-ico" aria-hidden="true">
             <svg viewBox="0 0 24 24">
-              <path d="M9.5 7C7.6 7 6 8.6 6 10.5c0 1.4.8 2.5 2.1 3L7 18h4l1.3-4.1A3.9 3.9 0 0 0 14 10.5C14 8.6 12.4 7 10.5 7h-1z"/>
-              <path d="M17.5 7C15.6 7 14 8.6 14 10.5c0 1.4.8 2.5 2.1 3L15 18h4l1.3-4.1A3.9 3.9 0 0 0 22 10.5C22 8.6 20.4 7 18.5 7h-1z"/>
+              <path d="M9.5 7C7.6 7 6 8.6 6 10.5c0 1.4.8 2.6 2 3.1V17h4v-6.5C12 8.6 10.9 7 9.5 7z"/>
+              <path d="M17.5 7C15.6 7 14 8.6 14 10.5c0 1.4.8 2.6 2 3.1V17h4v-6.5C20 8.6 18.9 7 17.5 7z"/>
             </svg>
           </div>
-          <div class="ts-body">
-            <p class="ts-quote">
-              “For our FPC, packaging and compliances felt impossible to manage. With Ayanant, we now have clear labels, the right registrations, and a product line that buyers actually notice and respect.”
-            </p>
+
+          <div>
+            <div class="ts-quote">
+              “{{ t.quote }}”
+            </div>
+
             <div class="ts-meta">
-              <span class="ts-name">BOARD DIRECTOR</span>
-              <span class="ts-role">Farmer Producer Company · North&nbsp;East</span>
-              <span class="ts-tag">FPC hand-holding</span>
+              <span class="ts-name">{{ t.person_name }}</span>
+
+              <span class="ts-role">
+                {{ t.role_title }}
+                {% if t.organization %}
+                  · {{ t.organization }}
+                {% endif %}
+                {% if t.location %}
+                  · {{ t.location }}
+                {% endif %}
+              </span>
+
+              {% if t.tag %}
+                <span class="ts-tag">{{ t.tag }}</span>
+              {% endif %}
             </div>
           </div>
         </article>
-
-        <!-- Testimonial 3 -->
-        <article class="ts-card ts-reveal">
-          <div class="ts-ico" aria-hidden="true">
-            <svg viewBox="0 0 24 24">
-              <path d="M9.5 7C7.6 7 6 8.6 6 10.5c0 1.4.8 2.5 2.1 3L7 18h4l1.3-4.1A3.9 3.9 0 0 0 14 10.5C14 8.6 12.4 7 10.5 7h-1z"/>
-              <path d="M17.5 7C15.6 7 14 8.6 14 10.5c0 1.4.8 2.5 2.1 3L15 18h4l1.3-4.1A3.9 3.9 0 0 0 22 10.5C22 8.6 20.4 7 18.5 7h-1z"/>
-            </svg>
-          </div>
-          <div class="ts-body">
-            <p class="ts-quote">
-              “Ayanant sits perfectly between design, markets, and community work. Their prototypes, packaging ideas, and go-to-market thinking have added real value to our incubation pipeline.”
-            </p>
-            <div class="ts-meta">
-              <span class="ts-name">INCUBATION MENTOR</span>
-              <span class="ts-role">Agri &amp; food systems · North&nbsp;East</span>
-              <span class="ts-tag">Ecosystem partner</span>
-            </div>
-          </div>
-        </article>
-
-        <!-- 🔁 HOW TO ADD MORE:
-             Just copy one more <article class="ts-card ts-reveal">...</article>
-             inside this .ts-col or create another .ts-col if you want more rows. -->
-      </div>
+      {% endfor %}
     </div>
   </div>
 
   <script>
-    // Reveal-on-scroll for testimonials (scoped)
     (function(){
       const root = document.getElementById('testimonials');
-      if(!root) return;
-      const items = Array.from(root.querySelectorAll('.ts-reveal'));
+      if (!root) return;
+      const els = Array.from(root.querySelectorAll('.ts-reveal'));
 
-      // Add stagger delays
-      items.forEach((el, i)=>{
-        el.style.setProperty('--ts-delay', (80 * i) + 'ms');
-      });
-
-      if(!('IntersectionObserver' in window)){
-        items.forEach(el => el.classList.add('ts-in'));
+      if (!('IntersectionObserver' in window)) {
+        els.forEach(el => el.classList.add('ts-in'));
         return;
       }
 
@@ -2717,12 +2931,13 @@
             io.unobserve(e.target);
           }
         });
-      }, { threshold:0.14 });
+      }, {threshold:.12});
 
-      items.forEach(el => io.observe(el));
+      els.forEach(el=>io.observe(el));
     })();
   </script>
 </section>
+{% endif %}
 
 <section id="ayanant-popup" aria-label="Ayanant highlight">
   <style>
@@ -2990,16 +3205,12 @@
      ========================================================= */
 
   #awards-slider .slider,
-  #ne-locals .slider,
   #awards-slider .slide,
-  #ne-locals .slide,
-  #awards-slider figure,
-  #ne-locals figure{
+  #awards-slider figure{
     overflow:visible !important;
   }
 
-  #awards-slider .media,
-  #ne-locals .media{
+  #awards-slider .media{
     aspect-ratio:auto !important;
     width:100% !important;
     height:auto !important;
@@ -3014,8 +3225,7 @@
     padding:clamp(14px, 2.2vw, 30px) !important;
   }
 
-  #awards-slider .media img,
-  #ne-locals .media img{
+  #awards-slider .media img{
     display:block !important;
     width:min(88%, 1120px) !important;
     max-width:88% !important;
@@ -3027,19 +3237,16 @@
     transform:none !important;
   }
 
-  #awards-slider figure:hover .media img,
-  #ne-locals figure:hover .media img{
+  #awards-slider figure:hover .media img{
     transform:none !important;
   }
 
   @media (max-width:720px){
-    #awards-slider .media,
-    #ne-locals .media{
+    #awards-slider .media{
       padding:10px !important;
     }
 
-    #awards-slider .media img,
-    #ne-locals .media img{
+    #awards-slider .media img{
       width:96% !important;
       max-width:96% !important;
     }

@@ -121,20 +121,9 @@
     }
     .f-list a:hover{color:var(--red); transform:translateX(2px);}
 
-    .socials{display:grid; grid-template-columns:repeat(2,48px); grid-auto-rows:48px; gap:12px; margin-top:6px;}
-    .socials a{ display:grid; place-items:center; width:48px; height:48px; border:1px solid #bbb; border-radius:50%; color:#111; text-decoration:none; font-weight:800; background:transparent; }
-.fb-social,
-.linkedin-social{
-  border-color:#bbb !important;
-  background:transparent !important;
-}
-
-.fb-social svg,
-.linkedin-social svg{
-  display:block;
-  width:24px;
-  height:24px;
-}
+ .socials{display:grid; grid-template-columns:repeat(2,48px); grid-auto-rows:48px; gap:12px; margin-top:6px;}
+.socials a{ display:grid; place-items:center; width:48px; height:48px; border:1px solid #bbb; border-radius:50%; color:#111; text-decoration:none; font-weight:800; background:transparent; }
+.socials a svg{display:block;}
 
 .footer-site-btn{
   margin-top:14px;
@@ -282,7 +271,7 @@
         <div class="msub" id="mbrands">
          <a href="/unnatfarm">UNNATFARM</a>
           <a href="{{ url_for('nelocals') }}">NE-LOCALS</a>
-          <a href="#">NE-FRESH</a>
+         
         </div>
         <a class="mnav-link" href="/gallery">VISUAL STORIES</a>
         <a class="mnav-link" href="/contact">GET IN TOUCH</a>
@@ -324,7 +313,7 @@
         <div class="dd-menu" role="menu" aria-label="Brands">
            <a class="dd-item" href="/unnatfarm">Unnat Farm</a>
           <a class="dd-item" href="{{ url_for('nelocals') }}">NE-LOCALS</a>
-          <a class="dd-item" href="#">NE-FRESH</a>
+         
        
         </div>
       </div>
@@ -366,7 +355,7 @@
           <li><a href="/about">ABOUT US</a></li>
           <a href="{{ url_for('admin_login') }}">CONSOLE</a>
           <li><a href="#">NE-LOCALS PRODUCTS</a></li>
-          <li><a href="#">NE-FRESH PRODUCTS</a></li>
+
           <li><a href="/contact">GET IN TOUCH</a></li>
 
         </ul>
@@ -379,7 +368,7 @@
         </ul>
       </div>
 
-      <div class="f-col">
+<div class="f-col">
   <h4>OUR SOCIALS</h4>
 
   {% if request.endpoint == 'unnatfarm' %}
@@ -390,9 +379,8 @@
          target="_blank"
          rel="noopener noreferrer"
          aria-label="UnnatFarm Facebook">
-        <svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true">
-          <circle cx="12" cy="12" r="12" fill="#111"/>
-          <path d="M15.64 12.7l.36-2.34h-2.24V8.84c0-.64.31-1.26 1.32-1.26h1.02V5.59s-.93-.16-1.82-.16c-1.85 0-3.06 1.12-3.06 3.15v1.78H9.16v2.34h2.06v5.66h2.54V12.7h1.88z" fill="#fff"/>
+        <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true">
+          <path d="M22 12a10 10 0 1 0-11.5 9.9v-7h-2v-3h2v-2.3c0-2 1.2-3.1 3-3.1.9 0 1.8.16 1.8.16v2h-1c-1 0-1.3.63-1.3 1.3V12h2.2l-.35 3h-1.85v7A10 10 0 0 0 22 12z" fill="currentColor"/>
         </svg>
       </a>
     </div>
@@ -403,33 +391,31 @@
        rel="noopener noreferrer">
       VISIT WEBSITE
     </a>
-{% else %}
-  <div class="socials">
-    <!-- Facebook -->
-    <a class="fb-social"
-       href="https://www.facebook.com/profile.php?id=61585091592444&amp;sfnsn=wiwspwa&amp;mibextid=RUbZ1f"
-       target="_blank"
-       rel="noopener noreferrer"
-       aria-label="Ayanant Facebook">
-      <svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true">
-        <circle cx="12" cy="12" r="12" fill="#111"/>
-        <path d="M15.64 12.7l.36-2.34h-2.24V8.84c0-.64.31-1.26 1.32-1.26h1.02V5.59s-.93-.16-1.82-.16c-1.85 0-3.06 1.12-3.06 3.15v1.78H9.16v2.34h2.06v5.66h2.54V12.7h1.88z" fill="#fff"/>
-      </svg>
-    </a>
+  {% else %}
+    <div class="socials">
+      <!-- Facebook -->
+      <a class="fb-social"
+         href="https://www.facebook.com/profile.php?id=61585091592444&amp;sfnsn=wiwspwa&amp;mibextid=RUbZ1f"
+         target="_blank"
+         rel="noopener noreferrer"
+         aria-label="Ayanant Facebook">
+        <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true">
+          <path d="M22 12a10 10 0 1 0-11.5 9.9v-7h-2v-3h2v-2.3c0-2 1.2-3.1 3-3.1.9 0 1.8.16 1.8.16v2h-1c-1 0-1.3.63-1.3 1.3V12h2.2l-.35 3h-1.85v7A10 10 0 0 0 22 12z" fill="currentColor"/>
+        </svg>
+      </a>
 
-    <!-- LinkedIn -->
-    <a class="linkedin-social"
-       href="https://www.linkedin.com/in/ayanant-ventures-private-limited-08ba023a8"
-       target="_blank"
-       rel="noopener noreferrer"
-       aria-label="Ayanant LinkedIn">
-      <svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true">
-        <circle cx="12" cy="12" r="12" fill="#111"/>
-        <path d="M7.2 9.8h2.1v6.9H7.2V9.8zm1.05-3.4c.68 0 1.22.54 1.22 1.2 0 .67-.54 1.21-1.22 1.21-.67 0-1.21-.54-1.21-1.21 0-.66.54-1.2 1.21-1.2zm2.55 3.4h2.02v.94h.03c.28-.53.97-1.09 2-1.09 2.14 0 2.54 1.41 2.54 3.24v3.81h-2.1v-3.38c0-.81-.02-1.85-1.13-1.85-1.13 0-1.3.88-1.3 1.79v3.44H10.8V9.8z" fill="#fff"/>
-      </svg>
-    </a>
-  </div>
-{% endif %}
+      <!-- LinkedIn -->
+      <a class="linkedin-social"
+         href="https://www.linkedin.com/in/ayanant-ventures-private-limited-08ba023a8"
+         target="_blank"
+         rel="noopener noreferrer"
+         aria-label="Ayanant LinkedIn">
+        <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true">
+          <path d="M4.98 3.5C4.98 4.88 3.86 6 2.5 6S0 4.88 0 3.5 1.12 1 2.5 1s2.48 1.12 2.48 2.5zM.5 8.5h4V23h-4V8.5zM8 8.5h3.8v2h.05C12.65 9.5 14.4 8 17.2 8 22.2 8 23 11.2 23 16v7h-4v-6.2c0-1.48-.03-3.38-2.06-3.38-2.06 0-2.38 1.6-2.38 3.27V23H10v-14.5z" fill="currentColor"/>
+        </svg>
+      </a>
+    </div>
+  {% endif %}
 </div>
 
       <div class="f-promo">

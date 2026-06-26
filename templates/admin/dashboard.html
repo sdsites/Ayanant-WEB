@@ -202,6 +202,12 @@
         border: 1px solid rgba(107, 107, 107, 0.18);
     }
 
+        .job-status.reviewed {
+        background: rgba(28, 27, 26, 0.08);
+        color: var(--ink);
+        border: 1px solid rgba(28, 27, 26, 0.14);
+    }
+
     .job-meta {
         display: flex;
         flex-wrap: wrap;
@@ -545,18 +551,114 @@
                 </p>
             </div>
 
-            <div class="admin-top-actions">
+                      <div class="admin-top-actions">
                 <a class="admin-btn primary" href="{{ url_for('create_job_opening') }}">
                     Post New Job
                 </a>
+
+                <a class="admin-btn" href="{{ url_for('admin_contact_messages') }}">
+                    Contact Messages
+                    {% if contact_new_count and contact_new_count > 0 %}
+                        ({{ contact_new_count }} New)
+                    {% endif %}
+                </a>
+
+                <a class="admin-btn" href="{{ url_for('admin_testimonials') }}">
+    Testimonials
+    {% if testimonial_open_count and testimonial_open_count > 0 %}
+        ({{ testimonial_open_count }} Live)
+    {% endif %}
+</a>
+
                 <a class="admin-btn" href="{{ url_for('career') }}" target="_blank">
                     View Careers Page
                 </a>
+
                 <a class="admin-btn" href="{{ url_for('admin_logout') }}">
                     Logout
                 </a>
             </div>
         </div>
+
+                <section class="admin-section" id="contact-summary">
+            <div class="admin-section-head">
+                <div>
+                    <h2>Contact Messages</h2>
+                    <p>
+                        View messages submitted from the Get in Touch page and track new enquiries from visitors.
+                    </p>
+                </div>
+
+                <a class="admin-btn primary" href="{{ url_for('admin_contact_messages') }}">
+                    View Messages
+                </a>
+            </div>
+
+            <div class="admin-section-body">
+                <div class="job-grid">
+                    <article class="job-card">
+                        <div class="job-card-top">
+                            <h3>{{ contact_new_count or 0 }} New</h3>
+                            <span class="job-status open">New</span>
+                        </div>
+                        <p class="job-text">
+                            New Get in Touch messages waiting for review.
+                        </p>
+                    </article>
+
+                    <article class="job-card">
+                        <div class="job-card-top">
+                            <h3>{{ contact_total_count or 0 }} Total</h3>
+                            <span class="job-status reviewed">Total</span>
+                        </div>
+                        <p class="job-text">
+                            Total contact form submissions received from the website.
+                        </p>
+                    </article>
+                </div>
+            </div>
+        </section>
+
+
+        <section class="admin-section" id="testimonial-summary">
+    <div class="admin-section-head">
+        <div>
+            <h2>Homepage Testimonials</h2>
+            <p>
+                Manage the Voices From The Field section shown on the homepage.
+                Live testimonials automatically appear on the website.
+            </p>
+        </div>
+
+        <a class="admin-btn primary" href="{{ url_for('admin_testimonials') }}">
+            Manage Testimonials
+        </a>
+    </div>
+
+    <div class="admin-section-body">
+        <div class="job-grid">
+            <article class="job-card">
+                <div class="job-card-top">
+                    <h3>{{ testimonial_open_count or 0 }}</h3>
+                    <span class="job-status open">Live</span>
+                </div>
+                <p class="job-text">
+                    Testimonials currently visible on the homepage.
+                </p>
+            </article>
+
+            <article class="job-card">
+                <div class="job-card-top">
+                    <h3>{{ testimonial_total_count or 0 }}</h3>
+                    <span class="job-status reviewed">Total</span>
+                </div>
+                <p class="job-text">
+                    Total testimonial records saved in the admin panel.
+                </p>
+            </article>
+        </div>
+    </div>
+</section>
 
         <section class="admin-section" id="job-openings">
             <div class="admin-section-head">

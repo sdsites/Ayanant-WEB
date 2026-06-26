@@ -1,15 +1,19 @@
+import json
 import os
 import sqlite3
 import uuid
 from datetime import datetime, timezone
 from functools import wraps
 from pathlib import Path
+from urllib import error as urllib_error
+from urllib import parse, request as urllib_request
 
 from PIL import Image, ImageOps
 
 from flask import (
     Flask,
     flash,
+    jsonify,
     redirect,
     render_template,
     request,
@@ -18,8 +22,11 @@ from flask import (
     url_for,
 )
 from werkzeug.utils import secure_filename
+from dotenv import load_dotenv
 
 BASE_DIR = Path(__file__).resolve().parent
+load_dotenv(BASE_DIR / ".env", override=True)
+
 DATABASE = BASE_DIR / "applications.db"
 UPLOAD_FOLDER = BASE_DIR / "uploads" / "resumes"
 STATIC_FOLDER = BASE_DIR / "static"
@@ -37,6 +44,13 @@ app.config["MAX_CONTENT_LENGTH"] = 10 * 1024 * 1024  # 10 MB
 
 ADMIN_USERNAME = os.environ.get("ADMIN_USERNAME", "admin@ayanant.com")
 ADMIN_PASSWORD = os.environ.get("ADMIN_PASSWORD", "ayanant@123")
+
+CLOUDFLARE_TURNSTILE_SITE_KEY = os.environ.get(
+    "CLOUDFLARE_TURNSTILE_SITE_KEY", ""
+).strip()
+CLOUDFLARE_TURNSTILE_SECRET_KEY = os.environ.get(
+    "CLOUDFLARE_TURNSTILE_SECRET_KEY", ""
+).strip()
 
 
 def utc_now() -> datetime:
@@ -87,6 +101,59 @@ def init_storage() -> None:
             )
             """
         )
+
+        conn.execute(
+            """
+            CREATE TABLE IF NOT EXISTS contact_messages (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                first_name TEXT NOT NULL,
+                last_name TEXT NOT NULL,
+                email TEXT NOT NULL,
+                phone TEXT,
+                reason TEXT NOT NULL,
+                message TEXT NOT NULL,
+                ip_address TEXT,
+                turnstile_success INTEGER NOT NULL DEFAULT 0,
+                status TEXT NOT NULL DEFAULT 'new',
+                created_at TEXT NOT NULL
+            )       
+            """
+        )
+
+        conn.execute(
+            """
+            CREATE TABLE IF NOT EXISTS testimonials (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                quote TEXT NOT NULL,
+                person_name TEXT NOT NULL,
+                role_title TEXT NOT NULL,
+                organization TEXT,
+                location TEXT,
+                tag TEXT,
+                ribbon TEXT,
+                is_featured INTEGER NOT NULL DEFAULT 0,
+                display_order INTEGER NOT NULL DEFAULT 0,
+                status TEXT NOT NULL DEFAULT 'open',
+                created_at TEXT NOT NULL
+            )
+            """
+        )
+
+
+        # Safe schema migration for older contact_messages table.
+        existing_contact_columns = {
+            row[1] for row in conn.execute("PRAGMA table_info(contact_messages)").fetchall()
+        }
+
+        required_contact_columns = {
+            "status": "TEXT NOT NULL DEFAULT 'new'",
+        }
+
+        for column_name, column_type in required_contact_columns.items():
+            if column_name not in existing_contact_columns:
+                conn.execute(
+                    f"ALTER TABLE contact_messages ADD COLUMN {column_name} {column_type}"
+                )
 
         # Safe schema migration for older applications table.
         existing_app_columns = {
@@ -307,7 +374,34 @@ def inject_thumbnail_helpers():
 @app.route("/")
 @app.route("/home")
 def home():
-    return render_template("index.html")
+    with get_db_connection() as conn:
+        testimonials = conn.execute(
+            """
+            SELECT
+                id, quote, person_name, role_title, organization, location,
+                tag, ribbon, is_featured, display_order, status, created_at
+            FROM testimonials
+            WHERE status = ?
+            ORDER BY display_order ASC, id DESC
+            """,
+            ("open",),
+        ).fetchall()
+
+    featured_testimonial = next(
+        (testimonial for testimonial in testimonials if testimonial["is_featured"]),
+        None,
+    )
+
+    normal_testimonials = [
+        testimonial for testimonial in testimonials if not testimonial["is_featured"]
+    ]
+
+    return render_template(
+        "index.html",
+        testimonials=testimonials,
+        featured_testimonial=featured_testimonial,
+        normal_testimonials=normal_testimonials,
+    )
 
 
 @app.route("/about")
@@ -327,7 +421,142 @@ def products():
 
 @app.route("/contact")
 def contact():
-    return render_template("getintouch.html")
+    return render_template(
+        "getintouch.html",
+        turnstile_site_key=CLOUDFLARE_TURNSTILE_SITE_KEY,
+    )
+
+
+def verify_turnstile_token(token: str, remote_ip: str | None = None) -> tuple[bool, str]:
+    """Verify Cloudflare Turnstile token before accepting a contact message."""
+    if not CLOUDFLARE_TURNSTILE_SECRET_KEY:
+        return True, ""
+
+    if not token:
+        return False, "Please complete the Cloudflare security verification."
+
+    payload = {
+        "secret": CLOUDFLARE_TURNSTILE_SECRET_KEY,
+        "response": token,
+    }
+
+    if remote_ip:
+        payload["remoteip"] = remote_ip
+
+    encoded_payload = parse.urlencode(payload).encode("utf-8")
+    verification_request = urllib_request.Request(
+        "https://challenges.cloudflare.com/turnstile/v0/siteverify",
+        data=encoded_payload,
+        method="POST",
+        headers={"Content-Type": "application/x-www-form-urlencoded"},
+    )
+
+    try:
+        with urllib_request.urlopen(verification_request, timeout=8) as response:
+            result = json.loads(response.read().decode("utf-8"))
+    except (urllib_error.URLError, TimeoutError, json.JSONDecodeError):
+        return False, "Cloudflare verification failed. Please try again."
+
+    if result.get("success") is True:
+        return True, ""
+
+    return False, "Cloudflare verification failed. Please try again."
+
+
+@app.route("/contact/submit", methods=["POST"])
+def submit_contact():
+    # Honeypot: silently accept bots without storing anything.
+    if request.form.get("website", "").strip():
+        return jsonify(
+            {
+                "success": True,
+                "message": "Thank you for contacting Ayanant. Our team will get back to you soon.",
+            }
+        )
+
+    first_name = request.form.get("first_name", "").strip()
+    last_name = request.form.get("last_name", "").strip()
+    email = request.form.get("email", "").strip()
+    phone = request.form.get("phone", "").strip()
+    reason = request.form.get("reason", "").strip()
+    message = request.form.get("message", "").strip()
+    turnstile_token = request.form.get("cf-turnstile-response", "").strip()
+
+    required_fields = [first_name, last_name, email, reason, message]
+    if not all(required_fields):
+        return (
+            jsonify(
+                {
+                    "success": False,
+                    "message": "Please fill in all required fields before submitting.",
+                }
+            ),
+            400,
+        )
+
+    if "@" not in email or "." not in email.rsplit("@", 1)[-1]:
+        return (
+            jsonify(
+                {
+                    "success": False,
+                    "message": "Please enter a valid email address.",
+                }
+            ),
+            400,
+        )
+
+    turnstile_configured = bool(CLOUDFLARE_TURNSTILE_SECRET_KEY)
+
+    is_verified, verification_message = verify_turnstile_token(
+        turnstile_token,
+        request.headers.get("CF-Connecting-IP") or request.remote_addr,
+    )
+
+    if not is_verified:
+        return (
+            jsonify(
+                {
+                    "success": False,
+                    "message": verification_message,
+                }
+            ),
+            400,
+        )
+
+    turnstile_success = 1 if turnstile_configured and is_verified else 0
+
+    created_at = utc_now().isoformat(timespec="seconds")
+
+    with get_db_connection() as conn:
+        conn.execute(
+            """
+            INSERT INTO contact_messages
+            (
+                first_name, last_name, email, phone, reason, message,
+                ip_address, turnstile_success, created_at
+            )
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+            """,
+            (
+                first_name,
+                last_name,
+                email,
+                phone,
+                reason,
+                message,
+                request.headers.get("CF-Connecting-IP") or request.remote_addr,
+                turnstile_success,
+                created_at,
+            ),
+        )
+        conn.commit()
+
+    return jsonify(
+        {
+            "success": True,
+            "message": "Thank you for contacting Ayanant. Your message has been submitted successfully.",
+        }
+    )
 
 
 @app.route("/career")
@@ -527,13 +756,326 @@ def admin_dashboard():
             """
         ).fetchall()
 
+
+
+        contact_total_count = conn.execute(
+            "SELECT COUNT(*) FROM contact_messages"
+        ).fetchone()[0]
+
+        contact_new_count = conn.execute(
+            "SELECT COUNT(*) FROM contact_messages WHERE status = ?",
+            ("new",),
+        ).fetchone()[0]
+
+
+        testimonial_total_count = conn.execute(
+            "SELECT COUNT(*) FROM testimonials"
+        ).fetchone()[0]
+
+        testimonial_open_count = conn.execute(
+            "SELECT COUNT(*) FROM testimonials WHERE status = ?",
+            ("open",),
+        ).fetchone()[0]
+
     return render_template(
         "admin/dashboard.html",
         applications=applications,
         job_openings=job_openings,
         status_filter=status_filter,
+        contact_total_count=contact_total_count,
+        contact_new_count=contact_new_count,
+        testimonial_total_count=testimonial_total_count,
+        testimonial_open_count=testimonial_open_count,
     )
 
+
+
+@app.route("/admin/contact-messages")
+@admin_required
+def admin_contact_messages():
+    status_filter = request.args.get("status", "").strip().lower()
+
+    with get_db_connection() as conn:
+        if status_filter and status_filter in {"new", "reviewed"}:
+            contact_messages = conn.execute(
+                """
+                SELECT
+                    id, first_name, last_name, email, phone, reason, message,
+                    ip_address, turnstile_success, status, created_at
+                FROM contact_messages
+                WHERE status = ?
+                ORDER BY id DESC
+                """,
+                (status_filter,),
+            ).fetchall()
+        else:
+            contact_messages = conn.execute(
+                """
+                SELECT
+                    id, first_name, last_name, email, phone, reason, message,
+                    ip_address, turnstile_success, status, created_at
+                FROM contact_messages
+                ORDER BY id DESC
+                """
+            ).fetchall()
+
+        contact_total_count = conn.execute(
+            "SELECT COUNT(*) FROM contact_messages"
+        ).fetchone()[0]
+
+        contact_new_count = conn.execute(
+            "SELECT COUNT(*) FROM contact_messages WHERE status = ?",
+            ("new",),
+        ).fetchone()[0]
+
+        contact_reviewed_count = conn.execute(
+            "SELECT COUNT(*) FROM contact_messages WHERE status = ?",
+            ("reviewed",),
+        ).fetchone()[0]
+
+    return render_template(
+        "admin/contact_messages.html",
+        contact_messages=contact_messages,
+        status_filter=status_filter,
+        contact_total_count=contact_total_count,
+        contact_new_count=contact_new_count,
+        contact_reviewed_count=contact_reviewed_count,
+    )
+
+
+@app.route("/admin/contact-message/<int:id>/review", methods=["POST"])
+@admin_required
+def review_contact_message(id: int):
+    with get_db_connection() as conn:
+        conn.execute(
+            "UPDATE contact_messages SET status = ? WHERE id = ?",
+            ("reviewed", id),
+        )
+        conn.commit()
+
+    flash("Contact message marked as reviewed.", "success")
+    return redirect(request.referrer or url_for("admin_contact_messages"))
+
+
+@app.route("/admin/contact-message/<int:id>/new", methods=["POST"])
+@admin_required
+def mark_contact_message_new(id: int):
+    with get_db_connection() as conn:
+        conn.execute(
+            "UPDATE contact_messages SET status = ? WHERE id = ?",
+            ("new", id),
+        )
+        conn.commit()
+
+    flash("Contact message marked as new.", "success")
+    return redirect(request.referrer or url_for("admin_contact_messages"))
+
+
+@app.route("/admin/contact-message/<int:id>/delete", methods=["POST"])
+@admin_required
+def delete_contact_message(id: int):
+    with get_db_connection() as conn:
+        conn.execute("DELETE FROM contact_messages WHERE id = ?", (id,))
+        conn.commit()
+
+    flash("Contact message deleted successfully.", "success")
+    return redirect(url_for("admin_contact_messages"))
+
+
+@app.route("/admin/testimonials", methods=["GET", "POST"])
+@admin_required
+def admin_testimonials():
+    if request.method == "POST":
+        quote = request.form.get("quote", "").strip()
+        person_name = request.form.get("person_name", "").strip()
+        role_title = request.form.get("role_title", "").strip()
+        organization = request.form.get("organization", "").strip()
+        location = request.form.get("location", "").strip()
+        tag = request.form.get("tag", "").strip()
+        ribbon = request.form.get("ribbon", "").strip()
+        status = request.form.get("status", "open").strip().lower()
+
+        try:
+            display_order = int(request.form.get("display_order", "0").strip() or 0)
+        except ValueError:
+            display_order = 0
+
+        is_featured = 1 if request.form.get("is_featured") == "on" else 0
+
+        if status not in {"open", "closed"}:
+            status = "open"
+
+        if not quote or not person_name or not role_title:
+            flash("Quote, name/title, and role/details are required.", "error")
+            return redirect(url_for("admin_testimonials"))
+
+        created_at = utc_now().isoformat(timespec="seconds")
+
+        with get_db_connection() as conn:
+            if is_featured:
+                conn.execute("UPDATE testimonials SET is_featured = 0")
+
+            conn.execute(
+                """
+                INSERT INTO testimonials
+                (
+                    quote, person_name, role_title, organization, location,
+                    tag, ribbon, is_featured, display_order, status, created_at
+                )
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                """,
+                (
+                    quote,
+                    person_name,
+                    role_title,
+                    organization,
+                    location,
+                    tag,
+                    ribbon,
+                    is_featured,
+                    display_order,
+                    status,
+                    created_at,
+                ),
+            )
+            conn.commit()
+
+        flash("Testimonial added successfully.", "success")
+        return redirect(url_for("admin_testimonials"))
+
+    with get_db_connection() as conn:
+        testimonials = conn.execute(
+            """
+            SELECT
+                id, quote, person_name, role_title, organization, location,
+                tag, ribbon, is_featured, display_order, status, created_at
+            FROM testimonials
+            ORDER BY is_featured DESC, display_order ASC, id DESC
+            """
+        ).fetchall()
+
+        testimonial_total_count = conn.execute(
+            "SELECT COUNT(*) FROM testimonials"
+        ).fetchone()[0]
+
+        testimonial_open_count = conn.execute(
+            "SELECT COUNT(*) FROM testimonials WHERE status = ?",
+            ("open",),
+        ).fetchone()[0]
+
+        testimonial_closed_count = conn.execute(
+            "SELECT COUNT(*) FROM testimonials WHERE status = ?",
+            ("closed",),
+        ).fetchone()[0]
+
+    return render_template(
+        "admin/testimonials.html",
+        testimonials=testimonials,
+        testimonial_total_count=testimonial_total_count,
+        testimonial_open_count=testimonial_open_count,
+        testimonial_closed_count=testimonial_closed_count,
+    )
+
+
+@app.route("/admin/testimonial/<int:id>/update", methods=["POST"])
+@admin_required
+def update_testimonial(id: int):
+    quote = request.form.get("quote", "").strip()
+    person_name = request.form.get("person_name", "").strip()
+    role_title = request.form.get("role_title", "").strip()
+    organization = request.form.get("organization", "").strip()
+    location = request.form.get("location", "").strip()
+    tag = request.form.get("tag", "").strip()
+    ribbon = request.form.get("ribbon", "").strip()
+    status = request.form.get("status", "open").strip().lower()
+
+    try:
+        display_order = int(request.form.get("display_order", "0").strip() or 0)
+    except ValueError:
+        display_order = 0
+
+    is_featured = 1 if request.form.get("is_featured") == "on" else 0
+
+    if status not in {"open", "closed"}:
+        status = "open"
+
+    if not quote or not person_name or not role_title:
+        flash("Quote, name/title, and role/details are required.", "error")
+        return redirect(url_for("admin_testimonials"))
+
+    with get_db_connection() as conn:
+        if is_featured:
+            conn.execute(
+                "UPDATE testimonials SET is_featured = 0 WHERE id != ?",
+                (id,),
+            )
+
+        conn.execute(
+            """
+            UPDATE testimonials
+            SET
+                quote = ?,
+                person_name = ?,
+                role_title = ?,
+                organization = ?,
+                location = ?,
+                tag = ?,
+                ribbon = ?,
+                is_featured = ?,
+                display_order = ?,
+                status = ?
+            WHERE id = ?
+            """,
+            (
+                quote,
+                person_name,
+                role_title,
+                organization,
+                location,
+                tag,
+                ribbon,
+                is_featured,
+                display_order,
+                status,
+                id,
+            ),
+        )
+        conn.commit()
+
+    flash("Testimonial updated successfully.", "success")
+    return redirect(url_for("admin_testimonials"))
+
+
+@app.route("/admin/testimonial/<int:id>/toggle", methods=["POST"])
+@admin_required
+def toggle_testimonial(id: int):
+    with get_db_connection() as conn:
+        testimonial = conn.execute(
+            "SELECT status FROM testimonials WHERE id = ?",
+            (id,),
+        ).fetchone()
+
+        if testimonial:
+            new_status = "closed" if testimonial["status"] == "open" else "open"
+            conn.execute(
+                "UPDATE testimonials SET status = ? WHERE id = ?",
+                (new_status, id),
+            )
+            conn.commit()
+
+    flash("Testimonial status updated.", "success")
+    return redirect(url_for("admin_testimonials"))
+
+
+@app.route("/admin/testimonial/<int:id>/delete", methods=["POST"])
+@admin_required
+def delete_testimonial(id: int):
+    with get_db_connection() as conn:
+        conn.execute("DELETE FROM testimonials WHERE id = ?", (id,))
+        conn.commit()
+
+    flash("Testimonial deleted successfully.", "success")
+    return redirect(url_for("admin_testimonials"))
 
 @app.route("/admin/jobs/create", methods=["GET", "POST"])
 @admin_required

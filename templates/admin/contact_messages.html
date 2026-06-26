@@ -1,0 +1,726 @@
+{% extends "base.html" %}
+
+{% block title %}Contact Messages | Ayanant Admin{% endblock %}
+
+{% block content %}
+<style>
+    .admin-page {
+        min-height: calc(100vh - var(--nav-height));
+        background:
+            radial-gradient(circle at top left, rgba(229, 35, 40, 0.08), transparent 34%),
+            radial-gradient(circle at bottom right, rgba(13, 122, 97, 0.08), transparent 32%),
+            var(--cream);
+        padding: 120px 18px 70px;
+        color: var(--ink);
+    }
+
+    .admin-shell {
+        width: min(1320px, 100%);
+        margin: 0 auto;
+    }
+
+    .admin-top {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 18px;
+        margin-bottom: 24px;
+    }
+
+    .admin-kicker {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 14px;
+        border: 1px solid rgba(229, 35, 40, 0.18);
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.62);
+        color: var(--red);
+        font-size: 12px;
+        font-weight: 900;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+        margin-bottom: 12px;
+    }
+
+    .admin-title {
+        font-family: "Bebas Neue", Impact, sans-serif;
+        font-size: clamp(42px, 7vw, 86px);
+        line-height: 0.9;
+        letter-spacing: 0.02em;
+        margin: 0;
+        text-transform: uppercase;
+    }
+
+    .admin-subtitle {
+        max-width: 780px;
+        margin: 12px 0 0;
+        color: var(--muted);
+        font-size: 15px;
+        line-height: 1.75;
+    }
+
+    .admin-top-actions {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        justify-content: flex-end;
+    }
+
+    .admin-btn {
+        min-height: 44px;
+        padding: 0 17px;
+        border-radius: 999px;
+        border: 1px solid rgba(28, 27, 26, 0.12);
+        background: #fff;
+        color: var(--ink);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 12px;
+        font-weight: 950;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        text-decoration: none;
+        cursor: pointer;
+        box-shadow: var(--shadow);
+        transition: transform 0.2s ease, background 0.2s ease, color 0.2s ease;
+        white-space: nowrap;
+    }
+
+    .admin-btn:hover {
+        transform: translateY(-2px);
+        background: var(--ink);
+        color: #fff;
+    }
+
+    .admin-btn.primary {
+        background: var(--red);
+        color: #fff;
+        border-color: var(--red);
+        box-shadow: 0 16px 36px rgba(229, 35, 40, 0.2);
+    }
+
+    .admin-btn.primary:hover {
+        background: var(--red-pressed);
+        color: #fff;
+    }
+
+    .summary-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 16px;
+        margin-bottom: 22px;
+    }
+
+    .summary-card {
+        border: 1px solid rgba(28, 27, 26, 0.1);
+        background:
+            linear-gradient(180deg, rgba(255, 255, 255, 0.94), rgba(255, 255, 255, 0.78));
+        border-radius: 24px;
+        padding: 20px;
+        box-shadow: 0 14px 34px rgba(28, 27, 26, 0.07);
+    }
+
+    .summary-card h3 {
+        margin: 0;
+        font-family: "Bebas Neue", Impact, sans-serif;
+        font-size: 46px;
+        line-height: 0.95;
+        letter-spacing: 0.03em;
+        text-transform: uppercase;
+        color: var(--ink);
+    }
+
+    .summary-card p {
+        margin: 9px 0 0;
+        color: var(--muted);
+        font-size: 13px;
+        font-weight: 800;
+        line-height: 1.55;
+    }
+
+    .admin-section {
+        background: rgba(255, 255, 255, 0.88);
+        border: 1px solid rgba(28, 27, 26, 0.1);
+        border-radius: 30px;
+        box-shadow: 0 24px 80px rgba(28, 27, 26, 0.1);
+        overflow: hidden;
+        margin-top: 22px;
+    }
+
+    .admin-section-head {
+        padding: 24px 26px;
+        background:
+            linear-gradient(135deg, rgba(28, 27, 26, 0.96), rgba(28, 27, 26, 0.86)),
+            radial-gradient(circle at top right, rgba(229, 35, 40, 0.25), transparent 35%);
+        color: #fff;
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 16px;
+    }
+
+    .admin-section-head h2 {
+        font-family: "Bebas Neue", Impact, sans-serif;
+        font-size: clamp(30px, 4vw, 52px);
+        letter-spacing: 0.03em;
+        line-height: 0.95;
+        text-transform: uppercase;
+        margin: 0;
+    }
+
+    .admin-section-head p {
+        margin: 8px 0 0;
+        max-width: 720px;
+        color: rgba(255, 255, 255, 0.76);
+        font-size: 14px;
+        line-height: 1.65;
+    }
+
+    .admin-section-body {
+        padding: 22px;
+    }
+
+    .filter-row {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        margin-bottom: 18px;
+    }
+
+    .filter-pill {
+        min-height: 38px;
+        padding: 0 14px;
+        border-radius: 999px;
+        border: 1px solid rgba(28, 27, 26, 0.12);
+        background: #fff;
+        color: var(--ink);
+        font-size: 11px;
+        font-weight: 950;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .filter-pill.active,
+    .filter-pill:hover {
+        background: var(--red);
+        border-color: var(--red);
+        color: #fff;
+    }
+
+    .table-wrap {
+        width: 100%;
+        overflow-x: auto;
+        border-radius: 22px;
+        border: 1px solid rgba(28, 27, 26, 0.1);
+        background: #fff;
+    }
+
+    .admin-table {
+        width: 100%;
+        border-collapse: collapse;
+        min-width: 1180px;
+        background: #fff;
+    }
+
+    .admin-table th,
+    .admin-table td {
+        padding: 14px 13px;
+        border-bottom: 1px solid rgba(28, 27, 26, 0.08);
+        text-align: left;
+        vertical-align: top;
+        font-size: 13px;
+        line-height: 1.55;
+    }
+
+    .admin-table th {
+        background: rgba(244, 237, 228, 0.78);
+        color: var(--ink);
+        font-size: 11px;
+        font-weight: 950;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        white-space: nowrap;
+    }
+
+    .admin-table tr:last-child td {
+        border-bottom: 0;
+    }
+
+    .message-name {
+        color: var(--ink);
+        font-weight: 950;
+    }
+
+    .message-small {
+        display: block;
+        color: var(--muted);
+        font-size: 12px;
+        margin-top: 4px;
+    }
+
+    .message-body {
+        max-width: 360px;
+        color: var(--muted);
+        white-space: pre-wrap;
+        word-break: break-word;
+    }
+
+    .status-badge {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 999px;
+        padding: 7px 10px;
+        font-size: 11px;
+        font-weight: 950;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        white-space: nowrap;
+    }
+
+    .status-new {
+        background: rgba(238, 162, 34, 0.13);
+        color: #a86c08;
+        border: 1px solid rgba(238, 162, 34, 0.22);
+    }
+
+    .status-reviewed {
+        background: rgba(28, 27, 26, 0.08);
+        color: var(--ink);
+        border: 1px solid rgba(28, 27, 26, 0.12);
+    }
+
+    .turnstile-badge {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 999px;
+        padding: 7px 10px;
+        font-size: 10px;
+        font-weight: 950;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        white-space: nowrap;
+        background: rgba(13, 122, 97, 0.1);
+        color: var(--green);
+        border: 1px solid rgba(13, 122, 97, 0.2);
+    }
+
+    .message-actions {
+        display: flex;
+        gap: 7px;
+        flex-wrap: wrap;
+    }
+
+    .mini-btn {
+        min-height: 36px;
+        padding: 0 12px;
+        border-radius: 999px;
+        border: 1px solid rgba(28, 27, 26, 0.12);
+        background: #fff;
+        color: var(--ink);
+        font-size: 10px;
+        font-weight: 950;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: transform 0.2s ease, background 0.2s ease, color 0.2s ease;
+    }
+
+    .mini-btn:hover {
+        transform: translateY(-2px);
+        background: var(--ink);
+        color: #fff;
+    }
+
+    .mini-btn.green {
+        background: var(--green);
+        color: #fff;
+        border-color: var(--green);
+    }
+
+    .mini-btn.green:hover {
+        background: #075f4b;
+    }
+
+    .mini-btn.danger {
+        background: #fff;
+        color: var(--red);
+        border-color: rgba(229, 35, 40, 0.28);
+    }
+
+    .mini-btn.danger:hover {
+        background: var(--red);
+        color: #fff;
+    }
+
+    .empty-state {
+        border: 1px dashed rgba(28, 27, 26, 0.18);
+        border-radius: 24px;
+        background: rgba(255, 255, 255, 0.62);
+        padding: 28px;
+        text-align: center;
+        color: var(--muted);
+    }
+
+    .empty-state h3 {
+        font-family: "Bebas Neue", Impact, sans-serif;
+        font-size: 36px;
+        line-height: 0.95;
+        margin: 0 0 8px;
+        color: var(--ink);
+        text-transform: uppercase;
+    }
+
+    .mobile-messages {
+        display: none;
+    }
+
+    .mobile-message-card {
+        border: 1px solid rgba(28, 27, 26, 0.1);
+        border-radius: 22px;
+        padding: 18px;
+        background: #fff;
+        box-shadow: 0 12px 28px rgba(28, 27, 26, 0.06);
+    }
+
+    .mobile-message-card + .mobile-message-card {
+        margin-top: 14px;
+    }
+
+    .mobile-message-card h3 {
+        margin: 0;
+        font-family: "Bebas Neue", Impact, sans-serif;
+        font-size: 32px;
+        letter-spacing: 0.03em;
+        text-transform: uppercase;
+    }
+
+    .mobile-info {
+        margin-top: 10px;
+        color: var(--muted);
+        font-size: 13px;
+        line-height: 1.65;
+    }
+
+    .mobile-info strong {
+        color: var(--ink);
+    }
+
+    .mobile-message-text {
+        margin-top: 10px;
+        padding: 12px;
+        border-radius: 14px;
+        background: rgba(244, 237, 228, 0.72);
+        color: var(--ink);
+        white-space: pre-wrap;
+        word-break: break-word;
+    }
+
+    @media (max-width: 900px) {
+        .admin-top,
+        .admin-section-head {
+            flex-direction: column;
+        }
+
+        .admin-top-actions,
+        .admin-section-head .admin-btn {
+            width: 100%;
+        }
+
+        .admin-btn {
+            width: 100%;
+        }
+
+        .summary-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    @media (max-width: 760px) {
+        .admin-page {
+            padding: 100px 14px 46px;
+        }
+
+        .admin-section {
+            border-radius: 24px;
+        }
+
+        .admin-section-head,
+        .admin-section-body {
+            padding: 20px 16px;
+        }
+
+        .table-wrap {
+            display: none;
+        }
+
+        .mobile-messages {
+            display: block;
+        }
+
+        .filter-row {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+
+        .filter-pill {
+            width: 100%;
+        }
+
+        .message-actions {
+            flex-direction: column;
+            margin-top: 14px;
+        }
+
+        .mini-btn {
+            width: 100%;
+        }
+    }
+</style>
+
+<main class="admin-page">
+    <div class="admin-shell">
+        <div class="admin-top">
+            <div>
+                <div class="admin-kicker">Ayanant Admin Panel</div>
+                <h1 class="admin-title">Contact Messages</h1>
+                <p class="admin-subtitle">
+                    Review enquiries submitted through the public Get in Touch form.
+                    Mark messages as reviewed after follow-up, or delete spam/irrelevant messages.
+                </p>
+            </div>
+
+            <div class="admin-top-actions">
+                <a class="admin-btn primary" href="{{ url_for('admin_dashboard') }}">
+                    Back To Dashboard
+                </a>
+
+                <a class="admin-btn" href="{{ url_for('contact') }}" target="_blank">
+                    View Contact Page
+                </a>
+
+                <a class="admin-btn" href="{{ url_for('admin_logout') }}">
+                    Logout
+                </a>
+            </div>
+        </div>
+
+        <div class="summary-grid">
+            <article class="summary-card">
+                <h3>{{ contact_new_count or 0 }}</h3>
+                <p>New messages waiting for review</p>
+            </article>
+
+            <article class="summary-card">
+                <h3>{{ contact_reviewed_count or 0 }}</h3>
+                <p>Messages already marked as reviewed</p>
+            </article>
+
+            <article class="summary-card">
+                <h3>{{ contact_total_count or 0 }}</h3>
+                <p>Total contact form submissions received</p>
+            </article>
+        </div>
+
+        <section class="admin-section" id="contact-messages">
+            <div class="admin-section-head">
+                <div>
+                    <h2>Submitted Enquiries</h2>
+                    <p>
+                        This list includes all messages submitted from the public contact form.
+                    </p>
+                </div>
+            </div>
+
+            <div class="admin-section-body">
+                <div class="filter-row">
+                    <a class="filter-pill {% if not status_filter %}active{% endif %}" href="{{ url_for('admin_contact_messages') }}">
+                        All
+                    </a>
+
+                    <a class="filter-pill {% if status_filter == 'new' %}active{% endif %}" href="{{ url_for('admin_contact_messages', status='new') }}">
+                        New
+                    </a>
+
+                    <a class="filter-pill {% if status_filter == 'reviewed' %}active{% endif %}" href="{{ url_for('admin_contact_messages', status='reviewed') }}">
+                        Reviewed
+                    </a>
+                </div>
+
+                {% if contact_messages %}
+                    <div class="table-wrap">
+                        <table class="admin-table">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Contact</th>
+                                    <th>Reason</th>
+                                    <th>Message</th>
+                                    <th>Security</th>
+                                    <th>Status</th>
+                                    <th>Submitted On</th>
+                                    <th>IP Address</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+                                {% for msg in contact_messages %}
+                                    <tr>
+                                        <td>
+                                            <span class="message-name">
+                                                {{ msg.first_name }} {{ msg.last_name }}
+                                            </span>
+                                        </td>
+
+                                        <td>
+                                            {{ msg.email }}
+                                            {% if msg.phone %}
+                                                <span class="message-small">{{ msg.phone }}</span>
+                                            {% else %}
+                                                <span class="message-small">No phone number</span>
+                                            {% endif %}
+                                        </td>
+
+                                        <td>{{ msg.reason }}</td>
+
+                                        <td>
+                                            <div class="message-body">{{ msg.message }}</div>
+                                        </td>
+
+                                        <td>
+                                            {% if msg.turnstile_success %}
+                                                <span class="turnstile-badge">Verified</span>
+                                            {% else %}
+                                                <span class="status-badge status-new">Not Verified</span>
+                                            {% endif %}
+                                        </td>
+
+                                        <td>
+                                            <span class="status-badge status-{{ msg.status }}">
+                                                {{ msg.status }}
+                                            </span>
+                                        </td>
+
+                                        <td>{{ msg.created_at }}</td>
+
+                                        <td>
+                                            {% if msg.ip_address %}
+                                                {{ msg.ip_address }}
+                                            {% else %}
+                                                —
+                                            {% endif %}
+                                        </td>
+
+                                        <td>
+                                            <div class="message-actions">
+                                                {% if msg.status == "new" %}
+                                                    <form method="POST" action="{{ url_for('review_contact_message', id=msg.id) }}">
+                                                        <button class="mini-btn green" type="submit">
+                                                            Review
+                                                        </button>
+                                                    </form>
+                                                {% else %}
+                                                    <form method="POST" action="{{ url_for('mark_contact_message_new', id=msg.id) }}">
+                                                        <button class="mini-btn" type="submit">
+                                                            Mark New
+                                                        </button>
+                                                    </form>
+                                                {% endif %}
+
+                                                <form
+                                                    method="POST"
+                                                    action="{{ url_for('delete_contact_message', id=msg.id) }}"
+                                                    onsubmit="return confirm('Are you sure you want to delete this contact message?');"
+                                                >
+                                                    <button class="mini-btn danger" type="submit">
+                                                        Delete
+                                                    </button>
+                                                </form>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="mobile-messages">
+                        {% for msg in contact_messages %}
+                            <article class="mobile-message-card">
+                                <h3>{{ msg.first_name }} {{ msg.last_name }}</h3>
+
+                                <div class="mobile-info">
+                                    <strong>Email:</strong> {{ msg.email }}<br>
+
+                                    {% if msg.phone %}
+                                        <strong>Phone:</strong> {{ msg.phone }}<br>
+                                    {% endif %}
+
+                                    <strong>Reason:</strong> {{ msg.reason }}<br>
+                                    <strong>Submitted On:</strong> {{ msg.created_at }}<br>
+
+                                    {% if msg.ip_address %}
+                                        <strong>IP:</strong> {{ msg.ip_address }}<br>
+                                    {% endif %}
+
+                                    <strong>Status:</strong>
+                                    <span class="status-badge status-{{ msg.status }}">
+                                        {{ msg.status }}
+                                    </span>
+                                </div>
+
+                                <div class="mobile-message-text">{{ msg.message }}</div>
+
+                                <div class="message-actions">
+                                    {% if msg.status == "new" %}
+                                        <form method="POST" action="{{ url_for('review_contact_message', id=msg.id) }}">
+                                            <button class="mini-btn green" type="submit">
+                                                Review
+                                            </button>
+                                        </form>
+                                    {% else %}
+                                        <form method="POST" action="{{ url_for('mark_contact_message_new', id=msg.id) }}">
+                                            <button class="mini-btn" type="submit">
+                                                Mark New
+                                            </button>
+                                        </form>
+                                    {% endif %}
+
+                                    <form
+                                        method="POST"
+                                        action="{{ url_for('delete_contact_message', id=msg.id) }}"
+                                        onsubmit="return confirm('Are you sure you want to delete this contact message?');"
+                                    >
+                                        <button class="mini-btn danger" type="submit">
+                                            Delete
+                                        </button>
+                                    </form>
+                                </div>
+                            </article>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="empty-state">
+                        <h3>No Contact Messages Yet</h3>
+                        <p>
+                            Submitted Get in Touch messages will appear here after visitors send enquiries from the contact page.
+                        </p>
+                    </div>
+                {% endif %}
+            </div>
+        </section>
+    </div>
+</main>
+{% endblock %}

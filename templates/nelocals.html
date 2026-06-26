@@ -117,16 +117,16 @@
   .hero-cta:hover{ transform:translateY(-1px); }
   .hero-cta:active{ background:var(--red-pressed); }
 
-  .hero-sub{
+    .hero-sub{
     max-width:860px;
     margin:12px auto 0;
     padding:0 16px;
     text-align:center;
-    color:rgba(28,27,26,.82);
+    color:rgba(28,27,26,.78);
     font-size:clamp(15px,1.8vw,18px);
     line-height:1.65;
-    font-weight:700;
-    text-shadow:0 1px 0 rgba(255,255,255,.36);
+    font-weight:500;
+    text-shadow:none;
   }
 
   .hero-tags{
@@ -578,6 +578,164 @@
     transform:scale(1.4);
   }
 
+    /* ===== PRODUCT CATEGORY CAROUSEL - CLEAN NON-GRADIENT DESIGN ===== */
+  #nl-category-slider .slider{
+    position:relative;
+    overflow:hidden;
+    margin-top:18px;
+    background:transparent !important;
+    border:none !important;
+    box-shadow:none !important;
+    padding:0 !important;
+  }
+
+  #nl-category-slider .track{
+    display:flex !important;
+    grid-auto-flow:unset !important;
+    grid-auto-columns:unset !important;
+    overflow:visible !important;
+    scroll-snap-type:none !important;
+    scroll-behavior:auto !important;
+    gap:0 !important;
+    scrollbar-width:none !important;
+    cursor:grab;
+    user-select:none;
+    -webkit-user-select:none;
+    touch-action:pan-y;
+    will-change:transform;
+    transform:translate3d(0,0,0);
+    transition:transform .55s cubic-bezier(.22,.8,.22,1);
+  }
+
+  #nl-category-slider .track.is-dragging{
+    cursor:grabbing;
+    transition:none !important;
+  }
+
+  #nl-category-slider .track::-webkit-scrollbar{
+    display:none;
+  }
+
+  #nl-category-slider .slide{
+    flex:0 0 100% !important;
+    min-width:100% !important;
+    scroll-snap-align:none !important;
+    padding:0 2px;
+  }
+
+  #nl-category-slider figure{
+    margin:0;
+    background:transparent !important;
+    border:none !important;
+    overflow:hidden;
+    display:grid;
+    grid-template-rows:auto auto;
+    gap:0;
+    border-radius:18px;
+  }
+
+  #nl-category-slider .media{
+    min-height:clamp(300px,44vw,480px) !important;
+    background:#fff !important;
+    background-image:none !important;
+    display:grid;
+    place-items:center;
+    overflow:hidden;
+    border-radius:18px !important;
+    border:1px solid rgba(55,57,47,.10) !important;
+    box-shadow:0 10px 22px rgba(55,57,47,.07) !important;
+    padding:clamp(26px,5vw,56px) !important;
+  }
+
+  #nl-category-slider .category-panel{
+    width:min(960px,100%);
+    display:grid;
+    grid-template-columns:auto minmax(0,1fr);
+    gap:clamp(18px,4vw,34px);
+    align-items:center;
+  }
+
+  #nl-category-slider .category-mark{
+    width:clamp(76px,11vw,118px) !important;
+    height:clamp(76px,11vw,118px) !important;
+    border-radius:20px !important;
+    display:grid;
+    place-items:center;
+    background:#f4ede4 !important;
+    color:#b33f36 !important;
+    font-size:clamp(34px,5vw,54px) !important;
+    box-shadow:none !important;
+    border:1px solid #ded6cb !important;
+  }
+
+  #nl-category-slider .category-title{
+    font-family:"Bebas Neue", Inter, ui-sans-serif;
+    font-size:clamp(32px,6vw,60px) !important;
+    letter-spacing:1px;
+    line-height:.98;
+    text-transform:uppercase;
+    margin:0;
+    color:#37392f;
+    text-shadow:none !important;
+    font-weight:400 !important;
+  }
+
+  #nl-category-slider .category-desc{
+    color:#7d746e !important;
+    font-size:clamp(14px,1.7vw,17px) !important;
+    line-height:1.6 !important;
+    max-width:66ch;
+    margin:12px 0 0;
+    font-weight:500 !important;
+  }
+
+  #nl-category-slider figcaption{
+    padding:14px 10px 4px !important;
+    display:flex;
+    align-items:flex-start;
+    justify-content:flex-start;
+    gap:10px;
+  }
+
+  #nl-category-slider .cap-title{
+    font-family:"Bebas Neue", Inter, ui-sans-serif;
+    font-size:clamp(20px,2.4vw,26px) !important;
+    letter-spacing:.6px;
+    line-height:1;
+    text-transform:uppercase;
+    color:#37392f;
+    font-weight:400 !important;
+  }
+
+  #nl-category-slider .cap-sub{
+    color:#988e87 !important;
+    font-size:13px;
+    font-weight:500;
+  }
+
+  #nl-category-slider .ctrl,
+  #nl-category-slider .dots{
+    display:none !important;
+  }
+
+  @media (max-width:720px){
+    #nl-category-slider .media{
+      min-height:390px !important;
+      padding:24px 20px !important;
+    }
+
+    #nl-category-slider .category-panel{
+      grid-template-columns:1fr;
+      text-align:center;
+      justify-items:center;
+    }
+
+    #nl-category-slider .category-desc{
+      margin-left:auto;
+      margin-right:auto;
+    }
+  }
+
   /* CTA same rounded/button language */
   #nl-final-cta{
     background:#f6f4ed;
@@ -706,6 +864,50 @@
       transition:none !important;
     }
   }
+
+    /* ===== NE LOCALS FOOTER SOCIAL ICONS - EXACT BASE STYLE ===== */
+  .footer .socials{
+    display:grid !important;
+    grid-template-columns:repeat(2,48px) !important;
+    grid-auto-rows:48px !important;
+    gap:12px !important;
+    margin-top:6px !important;
+  }
+
+  .footer .socials a{
+    display:grid !important;
+    place-items:center !important;
+    width:48px !important;
+    height:48px !important;
+    min-width:48px !important;
+    min-height:48px !important;
+    padding:0 !important;
+    border:1px solid #bbb !important;
+    border-radius:50% !important;
+    color:#111 !important;
+    text-decoration:none !important;
+    font-weight:800 !important;
+    background:transparent !important;
+    box-shadow:none !important;
+    line-height:1 !important;
+  }
+
+  .footer .socials a svg{
+    display:block !important;
+    width:22px !important;
+    height:22px !important;
+  }
+
+  .footer .socials a:hover{
+    color:#111 !important;
+    transform:translateY(-1px) !important;
+  }
+
+  @media (max-width:600px){
+    .footer .socials{
+      grid-template-columns:repeat(2,48px) !important;
+    }
+  }
 </style>
 
 <script defer>
@@ -731,6 +933,41 @@
         el.style.cursor = 'pointer';
       }
     });
+
+    /* NE LOCALS footer socials only */
+    const socialHeading = Array.from(document.querySelectorAll('.footer .f-col h4'))
+      .find(h => h.textContent.trim().toUpperCase() === 'OUR SOCIALS');
+
+    if (!socialHeading) return;
+
+    const socialCol = socialHeading.closest('.f-col');
+    if (!socialCol) return;
+
+    socialCol.innerHTML = `
+      <h4>OUR SOCIALS</h4>
+
+      <div class="socials">
+        <!-- Instagram -->
+        <a href="https://www.instagram.com/nelocals?igsh=dWFodGVnZWltZXE2"
+           target="_blank"
+           rel="noopener noreferrer"
+           aria-label="NE LOCALS Instagram">
+          <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
+            <path d="M12 2.2c3.2 0 3.6 0 4.8.1 1.2.1 1.9.3 2.4.6.6.3 1 .7 1.5 1.2.5.5.9.9 1.2 1.5.3.5.5 1.2.6 2.4.1 1.2.1 1.6.1 4.8s0 3.6-.1 4.8c-.1 1.2-.3 1.9-.6 2.4-.3.6-.7 1-1.2 1.5-.5.5-.9.9-1.5 1.2-.5.3-1.2.5-2.4.6-1.2.1-1.6.1-4.8.1s-3.5 0-4.7-.1c-1 0-1.6-.2-2-.4-.5-.2-.8-.4-1.2-.8-.4-.4-.6-.7-.8-1.2-.2-.4-.4-1-.4-2-.1-1.2-.1-1.6-.1-4.7s0-3.5.1-4.7c0-1 .2-1.6.4-2 .2-.5.4-.8.8-1.2.4-.4.7-.6 1.2-.8.4-.2 1-.4 2-.4 1.2-.1 1.6-.1 4.7-.1Zm0 1.8c-3.1 0-3.5 0-4.7.1-1 0-1.6.2-2 .4-.5.2-.8.4-1.2.8-.4.4-.6.7-.8 1.2-.2.4-.4 1-.4 2-.1 1.2-.1 1.6-.1 4.7s0 3.5.1 4.7c0 1 .2 1.6.4 2 .2.5.4.8.8 1.2.4.4.7.6 1.2.8.4.2 1 .4 2 .4 1.2.1 1.6.1 4.7.1s3.5 0 4.7-.1c1 0 1.6-.2 2-.4.5-.2.8-.4 1.2-.8.4-.4.6-.7.8-1.2.2-.4.4-1 .4-2 .1-1.2.1-1.6.1-4.7s0-3.5-.1-4.7c0-1-.2-1.6-.4-2-.2-.5-.4-.8-.8-1.2-.4-.4-.7-.6-1.2-.8-.4-.2-1-.4-2-.4-1.2-.1-1.6-.1-4.7-.1Zm0 3.1a5.9 5.9 0 1 1 0 11.8 5.9 5.9 0 0 1 0-11.8Zm0 1.8a4.1 4.1 0 1 0 0 8.2 4.1 4.1 0 0 0 0-8.2Zm5.9-2.2a1.4 1.4 0 1 1 0 2.8 1.4 1.4 0 0 1 0-2.8Z" fill="currentColor"/>
+          </svg>
+        </a>
+
+        <!-- Facebook -->
+        <a href="https://www.facebook.com/share/14evFAJgjhQ/"
+           target="_blank"
+           rel="noopener noreferrer"
+           aria-label="NE LOCALS Facebook">
+          <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true">
+            <path d="M22 12a10 10 0 1 0-11.5 9.9v-7h-2v-3h2v-2.3c0-2 1.2-3.1 3-3.1.9 0 1.8.16 1.8.16v2h-1c-1 0-1.3.63-1.3 1.3V12h2.2l-.35 3h-1.85v7A10 10 0 0 0 22 12z" fill="currentColor"/>
+          </svg>
+        </a>
+      </div>
+    `;
   });
 
   window.addEventListener('load', () => {
@@ -994,14 +1231,6 @@
     </header>
 
     <div class="slider reveal">
-      <div class="ctrl" aria-hidden="true">
-        <button class="btn prev" type="button" aria-label="Previous">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>
-        </button>
-        <button class="btn next" type="button" aria-label="Next">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 6l6 6-6 6"/></svg>
-        </button>
-      </div>
 
       <div class="track" role="region" aria-roledescription="carousel" aria-label="NE LOCALS product categories" tabindex="0">
         <div class="slide" role="group" aria-roledescription="slide" aria-label="1 of 4">
@@ -1084,8 +1313,6 @@
           </figure>
         </div>
       </div>
-
-      <div class="dots" role="tablist" aria-label="Slides"></div>
     </div>
   </div>
 
@@ -1101,128 +1328,343 @@
       els.forEach(el=>io.observe(el));
     })();
 
-    (function(){
-      const sec=document.getElementById('nl-category-slider');
-      if(!sec) return;
-      const track=sec.querySelector('.track');
-      const slides=[...sec.querySelectorAll('.slide')];
-      const prev=sec.querySelector('.prev');
-      const next=sec.querySelector('.next');
-      const dotsWrap=sec.querySelector('.dots');
-      if(!track || !slides.length || !dotsWrap) return;
+       (function(){
+      const sec = document.getElementById('nl-category-slider');
+      if (!sec) return;
 
-      dotsWrap.innerHTML=slides.map((_,i)=>
-        `<button class="dot" role="tab" aria-selected="${i===0?'true':'false'}"
-                 aria-current="${i===0?'true':'false'}" title="Slide ${i+1}"></button>`
-      ).join('');
-      const dots=[...dotsWrap.querySelectorAll('.dot')];
+      const slider = sec.querySelector('.slider');
+      const track = sec.querySelector('.track');
+      if (!slider || !track) return;
 
-      const total=slides.length;
-      slides.forEach((s,i)=>s.setAttribute('aria-label',`${i+1} of ${total}`));
+      const baseSlides = Array.from(track.querySelectorAll('.slide')).filter(slide => !slide.classList.contains('is-clone'));
+      const total = baseSlides.length;
+      if (total < 2) return;
 
-      let idx=0, lock=false;
+      /*
+        True continuous infinite carousel logic:
+        - Creates many duplicate sets and starts from the middle set.
+        - Autoplay keeps moving forward into the next duplicate set instead of jumping
+          back to the original first card after one round.
+        - Manual swipe left/right continues from the user's current card.
+        - Autoplay pauses during manual swipe and resumes after a longer calm delay.
+        - Re-centering happens only near the far buffer edges, silently on the same
+          logical card, so no blank space or visible reset appears.
+      */
+      const LOOP_SETS = 21;
+      const CENTER_SET = Math.floor(LOOP_SETS / 2);
+      const EDGE_BUFFER_SETS = 3;
+      const TRANSITION = 'transform .55s cubic-bezier(.22,.8,.22,1)';
+      const AUTOPLAY_DELAY = 3200;
+      const MANUAL_RESUME_DELAY = 2400;
 
-      function go(i){
-        idx=Math.max(0,Math.min(total-1,i));
-        track.scrollTo({left:slides[idx].offsetLeft-track.offsetLeft,behavior:'smooth'});
-        updateDots();
-      }
-      function updateDots(){
-        dots.forEach((d,i)=>{
-          const on=i===idx;
-          d.setAttribute('aria-current',on?'true':'false');
-          d.setAttribute('aria-selected',on?'true':'false');
+      const templates = baseSlides.map(slide => slide.cloneNode(true));
+      track.innerHTML = '';
+
+      for (let set = 0; set < LOOP_SETS; set++) {
+        templates.forEach((template, logicalIndex) => {
+          const slide = template.cloneNode(true);
+          slide.classList.add('is-clone');
+          slide.dataset.logicalIndex = String(logicalIndex);
+          slide.setAttribute('aria-label', (logicalIndex + 1) + ' of ' + total);
+          track.appendChild(slide);
         });
       }
-      function nearestIndex(){
-        const x=track.scrollLeft, w=track.clientWidth;
-        return Math.round(x/w);
+
+      let slides = Array.from(track.querySelectorAll('.slide'));
+      let slideWidth = 0;
+      let resizeTimer = null;
+      let autoTimer = null;
+      let resumeTimer = null;
+
+      let virtualIndex = CENTER_SET * total;
+      let isDragging = false;
+      let pointerId = null;
+      let startX = 0;
+      let startTranslateX = 0;
+      let currentTranslateX = 0;
+      let dragStartIndex = virtualIndex;
+      let moved = false;
+
+      const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+      function positiveModulo(value, mod){
+        return ((value % mod) + mod) % mod;
       }
 
-      prev.addEventListener('click',()=>{stop();go(idx-1);startSoon();});
-      next.addEventListener('click',()=>{stop();go(idx+1);startSoon();});
-      dots.forEach((d,i)=>d.addEventListener('click',()=>{stop();go(i);startSoon();}));
+      function logicalFromIndex(index){
+        return positiveModulo(Math.round(index), total);
+      }
 
-      track.addEventListener('keydown',(e)=>{
-        if(e.key==='ArrowRight'){stop();go(idx+1);startSoon();}
-        if(e.key==='ArrowLeft'){stop();go(idx-1);startSoon();}
+      function currentLogicalIndex(){
+        return logicalFromIndex(virtualIndex);
+      }
+
+      function centeredIndexFor(logical){
+        return (CENTER_SET * total) + positiveModulo(logical, total);
+      }
+
+      function setTransition(enabled){
+        track.style.transition = enabled ? TRANSITION : 'none';
+      }
+
+      function setTranslate(x){
+        currentTranslateX = x;
+        track.style.transform = 'translate3d(' + x + 'px,0,0)';
+      }
+
+      function updateVisibleAccessibility(){
+        const activeLogical = currentLogicalIndex();
+
+        slides.forEach(slide => {
+          const logical = Number(slide.dataset.logicalIndex || 0);
+
+          if (logical === activeLogical) {
+            slide.removeAttribute('aria-hidden');
+          } else {
+            slide.setAttribute('aria-hidden', 'true');
+          }
+        });
+      }
+
+      function needsRecentering(){
+        const lowLimit = EDGE_BUFFER_SETS * total;
+        const highLimit = (LOOP_SETS - EDGE_BUFFER_SETS) * total;
+
+        return virtualIndex <= lowLimit || virtualIndex >= highLimit;
+      }
+
+      function recenterOnlyNearEdges(){
+        if (!slideWidth || !needsRecentering()) {
+          updateVisibleAccessibility();
+          return;
+        }
+
+        const sameCard = currentLogicalIndex();
+        virtualIndex = centeredIndexFor(sameCard);
+
+        setTransition(false);
+        setTranslate(-virtualIndex * slideWidth);
+        updateVisibleAccessibility();
+
+        requestAnimationFrame(() => {
+          setTransition(true);
+        });
+      }
+
+      function measure(){
+        slideWidth = slider.clientWidth || sec.clientWidth || window.innerWidth || 1;
+
+        setTransition(false);
+        setTranslate(-virtualIndex * slideWidth);
+        updateVisibleAccessibility();
+
+        requestAnimationFrame(() => {
+          setTransition(true);
+        });
+      }
+
+      function goTo(nextIndex, animate = true){
+        if (!slideWidth) measure();
+
+        virtualIndex = nextIndex;
+        setTransition(animate);
+        setTranslate(-virtualIndex * slideWidth);
+        updateVisibleAccessibility();
+      }
+
+      function nextSlide(){
+        goTo(virtualIndex + 1, true);
+      }
+
+      function previousSlide(){
+        goTo(virtualIndex - 1, true);
+      }
+
+      function clearAutoplayTimers(){
+        if (autoTimer) {
+          clearTimeout(autoTimer);
+          autoTimer = null;
+        }
+
+        if (resumeTimer) {
+          clearTimeout(resumeTimer);
+          resumeTimer = null;
+        }
+      }
+
+      function startAutoplay(delay = AUTOPLAY_DELAY){
+        if (reducedMotion || autoTimer || total < 2) return;
+
+        autoTimer = setTimeout(() => {
+          autoTimer = null;
+
+          if (!document.hidden && !isDragging) {
+            nextSlide();
+          }
+
+          startAutoplay(AUTOPLAY_DELAY);
+        }, delay);
+      }
+
+      function pauseAutoplay(){
+        clearAutoplayTimers();
+      }
+
+      function resumeAutoplayAfterManualPause(){
+        clearAutoplayTimers();
+
+        if (reducedMotion) return;
+
+        resumeTimer = setTimeout(() => {
+          resumeTimer = null;
+          startAutoplay(AUTOPLAY_DELAY);
+        }, MANUAL_RESUME_DELAY);
+      }
+
+      function normalizeDragTranslate(translateX, dx){
+        if (!slideWidth) return translateX;
+
+        const floatIndex = -translateX / slideWidth;
+        const lowLimit = EDGE_BUFFER_SETS * total;
+        const highLimit = (LOOP_SETS - EDGE_BUFFER_SETS) * total;
+
+        if (floatIndex > lowLimit && floatIndex < highLimit) {
+          return translateX;
+        }
+
+        const logicalFloat = positiveModulo(floatIndex, total);
+        const centeredFloatIndex = (CENTER_SET * total) + logicalFloat;
+        const wrappedTranslateX = -centeredFloatIndex * slideWidth;
+
+        startTranslateX = wrappedTranslateX - dx;
+        dragStartIndex = Math.round(centeredFloatIndex);
+        virtualIndex = dragStartIndex;
+
+        return wrappedTranslateX;
+      }
+
+      function pointerDown(e){
+        if (e.pointerType === 'mouse' && e.button !== 0) return;
+
+        pauseAutoplay();
+        recenterOnlyNearEdges();
+        measure();
+
+        isDragging = true;
+        pointerId = e.pointerId;
+        startX = e.clientX;
+        dragStartIndex = virtualIndex;
+        startTranslateX = -virtualIndex * slideWidth;
+        currentTranslateX = startTranslateX;
+        moved = false;
+
+        track.classList.add('is-dragging');
+        setTransition(false);
+
+        try {
+          track.setPointerCapture(pointerId);
+        } catch(err) {}
+      }
+
+      function pointerMove(e){
+        if (!isDragging || e.pointerId !== pointerId) return;
+
+        const dx = e.clientX - startX;
+
+        if (Math.abs(dx) > 4) {
+          moved = true;
+          e.preventDefault();
+        }
+
+        const x = normalizeDragTranslate(startTranslateX + dx, dx);
+        setTranslate(x);
+      }
+
+      function finishDrag(e){
+        if (!isDragging || e.pointerId !== pointerId) return;
+
+        const dx = e.clientX - startX;
+        const threshold = Math.min(130, Math.max(55, slideWidth * 0.16));
+        let targetIndex = dragStartIndex;
+
+        isDragging = false;
+        track.classList.remove('is-dragging');
+
+        try {
+          track.releasePointerCapture(pointerId);
+        } catch(err) {}
+
+        pointerId = null;
+
+        if (moved && Math.abs(dx) > threshold) {
+          targetIndex = Math.round(-currentTranslateX / slideWidth);
+        }
+
+        goTo(targetIndex, true);
+        resumeAutoplayAfterManualPause();
+      }
+
+      function cancelDrag(e){
+        if (!isDragging || e.pointerId !== pointerId) return;
+
+        isDragging = false;
+        track.classList.remove('is-dragging');
+
+        try {
+          track.releasePointerCapture(pointerId);
+        } catch(err) {}
+
+        pointerId = null;
+
+        goTo(dragStartIndex, true);
+        resumeAutoplayAfterManualPause();
+      }
+
+      track.addEventListener('transitionend', function(e){
+        if (e.propertyName && e.propertyName !== 'transform') return;
+        recenterOnlyNearEdges();
       });
 
-      track.addEventListener('scroll',()=>{
-        if(lock) return;
-        lock=true;
-        setTimeout(()=>{idx=nearestIndex();updateDots();lock=false;},110);
-      },{passive:true});
+      track.addEventListener('pointerdown', pointerDown);
+      track.addEventListener('pointermove', pointerMove, { passive:false });
+      track.addEventListener('pointerup', finishDrag);
+      track.addEventListener('pointercancel', cancelDrag);
+      track.addEventListener('dragstart', e => e.preventDefault());
 
-      let isDown=false,startX=0,startScroll=0;
-      const THRESHOLD=60;
-
-      function getClientX(e){
-        if(e.clientX!=null) return e.clientX;
-        if(e.touches && e.touches[0]) return e.touches[0].clientX;
-        if(e.changedTouches && e.changedTouches[0]) return e.changedTouches[0].clientX;
-        return 0;
-      }
-      function onPointerDown(e){
-        isDown=true;
-        track.classList.add('grabbing');
-        startX=getClientX(e);
-        startScroll=track.scrollLeft;
-        stop();
-      }
-      function onPointerMove(e){
-        if(!isDown) return;
-        const x=getClientX(e);
-        const dx=startX-x;
-        track.scrollLeft=startScroll+dx;
-      }
-      function onPointerUp(e){
-        if(!isDown) return;
-        isDown=false;
-        track.classList.remove('grabbing');
-        const x=getClientX(e);
-        const dx=startX-x;
-        if(Math.abs(dx)>THRESHOLD){
-          if(dx>0) go(idx+1); else go(idx-1);
-        }else{
-          go(nearestIndex());
+      track.addEventListener('keydown', function(e){
+        if (e.key === 'ArrowRight') {
+          e.preventDefault();
+          pauseAutoplay();
+          nextSlide();
+          resumeAutoplayAfterManualPause();
         }
-        startSoon();
-      }
 
-      track.addEventListener('pointerdown',onPointerDown);
-      window.addEventListener('pointermove',onPointerMove,{passive:true});
-      window.addEventListener('pointerup',onPointerUp,{passive:true});
-      track.addEventListener('touchstart',onPointerDown,{passive:true});
-      track.addEventListener('touchmove',onPointerMove,{passive:true});
-      track.addEventListener('touchend',onPointerUp,{passive:true});
-      track.addEventListener('dragstart',e=>e.preventDefault());
+        if (e.key === 'ArrowLeft') {
+          e.preventDefault();
+          pauseAutoplay();
+          previousSlide();
+          resumeAutoplayAfterManualPause();
+        }
+      });
 
-      const autoPlayAllowed=!matchMedia('(prefers-reduced-motion: reduce)').matches && total>1;
-      let timer=null,resumeTimer=null;
+      window.addEventListener('resize', () => {
+        clearTimeout(resizeTimer);
+        resizeTimer = setTimeout(() => {
+          recenterOnlyNearEdges();
+          measure();
+        }, 150);
+      }, { passive:true });
 
-      function start(){
-        if(timer || !autoPlayAllowed) return;
-        timer=setTimeout(function tick(){
-          go((idx+1)%total);
-          timer=setTimeout(tick,2800);
-        },2800);
-      }
-      function stop(){
-        if(timer){clearTimeout(timer);timer=null;}
-        if(resumeTimer){clearTimeout(resumeTimer);resumeTimer=null;}
-      }
-      function startSoon(){
-        if(!autoPlayAllowed) return;
-        if(resumeTimer) clearTimeout(resumeTimer);
-        resumeTimer=setTimeout(()=>{start();},900);
-      }
+      document.addEventListener('visibilitychange', () => {
+        if (document.hidden) {
+          pauseAutoplay();
+        } else {
+          resumeAutoplayAfterManualPause();
+        }
+      });
 
-      track.addEventListener('pointerenter',stop);
-      track.addEventListener('pointerleave',startSoon);
-
-      updateDots();
-      start();
+      measure();
+      startAutoplay();
     })();
   </script>
 </section>
