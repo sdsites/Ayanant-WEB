@@ -10,14 +10,15 @@
   .site{ filter:none !important; transform:none !important; }
 
   /* --- Intro: lighting 3D + circle rollout (site color) --- */
-  .reveal-wipe{
-    position:fixed; inset:0; z-index:9999;
-    background: var(--cream, #f4ede4);     /* match site tone */
-    /* circle window that expands to reveal page */
-    clip-path: circle(0 at 50% 55%);
-    transition: clip-path 1s cubic-bezier(.2,.8,.1,1), opacity .45s ease .9s;
-    pointer-events:none;
-  }
+ .reveal-wipe{
+  position:fixed;
+  inset:0;
+  z-index:9998;
+  background: var(--cream, #f4ede4);
+  clip-path: circle(150% at 50% 55%);
+  transition: clip-path .9s cubic-bezier(.2,.8,.1,1), opacity .35s ease .75s, visibility .35s ease .75s;
+  pointer-events:none;
+}
   /* glow/lighting layer (more visible) */
   .reveal-wipe::before{
     content:""; position:absolute; inset:-10%;
@@ -45,14 +46,17 @@
     opacity:.0;
   }
   .reveal-wipe.on{
-    clip-path: circle(150% at 50% 55%);
-  }
+  clip-path: circle(0 at 50% 55%);
+}
   .reveal-wipe.on::before{ opacity:1; }
   .reveal-wipe.on::after{
     opacity:1;
     animation: sweep .9s cubic-bezier(.2,.8,.2,1) forwards;
   }
-  .reveal-wipe.done{ opacity:0; }
+ .reveal-wipe.done{
+  opacity:0;
+  visibility:hidden;
+}
 
   /* brief 3D tilt for depth */
   body.intro-tilt .site{
@@ -146,17 +150,43 @@
     });
   });
 
-  // Circle rollout + lighting + 3D intro
-  window.addEventListener('load', () => {
-    document.body.classList.add('intro-tilt');     // brief 3D tilt
-    const wipe = document.querySelector('.reveal-wipe');
-    requestAnimationFrame(()=> wipe.classList.add('on')); // start rollout next frame
-    setTimeout(()=>{
-      wipe.classList.add('done');
-      document.body.classList.remove('intro-tilt');
-      setTimeout(()=> wipe.remove(), 500);
-    }, 1100);
+// Circle rollout + lighting + 3D intro
+window.runHeroIntro = function(){
+  const wipe = document.querySelector('.reveal-wipe');
+  const video = document.querySelector('.hero-bg');
+
+  function playHeroVideo(reset){
+    if (!video) return;
+
+    video.muted = true;
+    video.playsInline = true;
+
+    if (reset) {
+      try { video.currentTime = 0; } catch(e) {}
+    }
+
+    const playPromise = video.play();
+    if (playPromise && typeof playPromise.catch === 'function') {
+      playPromise.catch(() => {});
+    }
+  }
+
+  document.body.classList.add('intro-tilt');
+
+  requestAnimationFrame(() => {
+    playHeroVideo(true);
+    if (wipe) wipe.classList.add('on');
   });
+
+  setTimeout(() => {
+    if (wipe) wipe.classList.add('done');
+    document.body.classList.remove('intro-tilt');
+
+    setTimeout(() => {
+      if (wipe) wipe.remove();
+    }, 450);
+  }, 950);
+};
 </script>
 {% endblock %}
 
@@ -246,13 +276,18 @@
 
   <script>
     // ====== Hide preloader after page load ======
-    window.addEventListener('load', ()=>{
-      const pre=document.getElementById('preloader');
-      setTimeout(()=>{
-        pre.classList.add('hide');
-        document.body.classList.add('ready'); // ensure site transition triggers
-      }, 1000); // small delay for smooth fade
-    });
+  window.addEventListener('load', ()=>{
+  const pre = document.getElementById('preloader');
+
+  setTimeout(() => {
+    if (pre) pre.classList.add('hide');
+    document.body.classList.add('ready');
+
+    if (typeof window.runHeroIntro === 'function') {
+      window.runHeroIntro();
+    }
+  }, 1000);
+});
   </script>
 </section>
 
@@ -262,9 +297,15 @@
   <!-- Hero -->
   <section class="hero" role="img" aria-label="Brick wall with hands and taco">
     <!-- Background video -->
-  <video class="hero-bg" autoplay muted loop playsinline
-         src="{{ url_for('static', filename='herovid4.mp4') }}">
-  </video>
+ <video class="hero-bg"
+       autoplay
+       muted
+       loop
+       playsinline
+       preload="auto"
+       aria-hidden="true">
+  <source src="{{ url_for('static', filename='herovid4.mp4') }}" type="video/mp4">
+</video>
 
     <div class="hero-inner">
       <center>
