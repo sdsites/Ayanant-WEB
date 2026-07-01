@@ -23,6 +23,8 @@ from flask import (
 )
 from werkzeug.utils import secure_filename
 from dotenv import load_dotenv
+from flask_limiter import Limiter
+from flask_limiter.errors import RateLimitExceeded
 
 BASE_DIR = Path(__file__).resolve().parent
 load_dotenv(BASE_DIR / ".env", override=True)
@@ -41,6 +43,51 @@ app = Flask(__name__)
 app.config["SECRET_KEY"] = os.environ.get("SECRET_KEY", "change-this-secret-key")
 app.config["UPLOAD_FOLDER"] = str(UPLOAD_FOLDER)
 app.config["MAX_CONTENT_LENGTH"] = 10 * 1024 * 1024  # 10 MB
+app.config["RATELIMIT_HEADERS_ENABLED"] = True
+
+
+def get_client_ip() -> str:
+    """Return the real visitor IP for rate limiting behind Cloudflare/Nginx."""
+    cf_ip = request.headers.get("CF-Connecting-IP", "").strip()
+    if cf_ip:
+        return cf_ip
+
+    forwarded_for = request.headers.get("X-Forwarded-For", "").split(",", 1)[0].strip()
+    if forwarded_for:
+        return forwarded_for
+
+    return request.remote_addr or "unknown"
+
+
+RATELIMIT_STORAGE_URI = os.environ.get(
+    "RATELIMIT_STORAGE_URI",
+    "redis://127.0.0.1:6379/0",
+).strip() or "redis://127.0.0.1:6379/0"
+
+limiter = Limiter(
+    key_func=get_client_ip,
+    app=app,
+    default_limits=["200 per minute"],
+    storage_uri=RATELIMIT_STORAGE_URI,
+    strategy="fixed-window",
+)
+
+
+@limiter.request_filter
+def skip_rate_limit_for_static_assets() -> bool:
+    """Do not count CSS, JS, images, videos, or other static assets."""
+    return request.endpoint == "static" or request.path.startswith("/static/")
+
+
+@app.errorhandler(RateLimitExceeded)
+def handle_rate_limit_exceeded(error):
+    message = "Too many requests. Please wait a minute and try again."
+
+    if request.path == "/contact/submit" or request.accept_mimetypes.best == "application/json":
+        return jsonify({"success": False, "message": message}), 429
+
+    return message, 429
+
 
 ADMIN_USERNAME = os.environ.get("ADMIN_USERNAME", "admin@ayanant.com")
 ADMIN_PASSWORD = os.environ.get("ADMIN_PASSWORD", "ayanant@123")
