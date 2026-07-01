@@ -17,5 +17,3 @@ gunicorn==22.0.0
 itsdangerous==2.2.0
 click==8.1.7
 python-dotenv
-Flask-Limiter
-redis

@@ -1,10 +1,13 @@
 import json
 import os
 import sqlite3
+import time
 import uuid
+from collections import deque
 from datetime import datetime, timezone
 from functools import wraps
 from pathlib import Path
+from threading import Lock
 from urllib import error as urllib_error
 from urllib import parse, request as urllib_request
 
@@ -23,8 +26,6 @@ from flask import (
 )
 from werkzeug.utils import secure_filename
 from dotenv import load_dotenv
-from flask_limiter import Limiter
-from flask_limiter.errors import RateLimitExceeded
 
 BASE_DIR = Path(__file__).resolve().parent
 load_dotenv(BASE_DIR / ".env", override=True)
@@ -43,51 +44,6 @@ app = Flask(__name__)
 app.config["SECRET_KEY"] = os.environ.get("SECRET_KEY", "change-this-secret-key")
 app.config["UPLOAD_FOLDER"] = str(UPLOAD_FOLDER)
 app.config["MAX_CONTENT_LENGTH"] = 10 * 1024 * 1024  # 10 MB
-app.config["RATELIMIT_HEADERS_ENABLED"] = True
-
-
-def get_client_ip() -> str:
-    """Return the real visitor IP for rate limiting behind Cloudflare/Nginx."""
-    cf_ip = request.headers.get("CF-Connecting-IP", "").strip()
-    if cf_ip:
-        return cf_ip
-
-    forwarded_for = request.headers.get("X-Forwarded-For", "").split(",", 1)[0].strip()
-    if forwarded_for:
-        return forwarded_for
-
-    return request.remote_addr or "unknown"
-
-
-RATELIMIT_STORAGE_URI = os.environ.get(
-    "RATELIMIT_STORAGE_URI",
-    "redis://127.0.0.1:6379/0",
-).strip() or "redis://127.0.0.1:6379/0"
-
-limiter = Limiter(
-    key_func=get_client_ip,
-    app=app,
-    default_limits=["200 per minute"],
-    storage_uri=RATELIMIT_STORAGE_URI,
-    strategy="fixed-window",
-)
-
-
-@limiter.request_filter
-def skip_rate_limit_for_static_assets() -> bool:
-    """Do not count CSS, JS, images, videos, or other static assets."""
-    return request.endpoint == "static" or request.path.startswith("/static/")
-
-
-@app.errorhandler(RateLimitExceeded)
-def handle_rate_limit_exceeded(error):
-    message = "Too many requests. Please wait a minute and try again."
-
-    if request.path == "/contact/submit" or request.accept_mimetypes.best == "application/json":
-        return jsonify({"success": False, "message": message}), 429
-
-    return message, 429
-
 
 ADMIN_USERNAME = os.environ.get("ADMIN_USERNAME", "admin@ayanant.com")
 ADMIN_PASSWORD = os.environ.get("ADMIN_PASSWORD", "ayanant@123")
@@ -98,6 +54,71 @@ CLOUDFLARE_TURNSTILE_SITE_KEY = os.environ.get(
 CLOUDFLARE_TURNSTILE_SECRET_KEY = os.environ.get(
     "CLOUDFLARE_TURNSTILE_SECRET_KEY", ""
 ).strip()
+
+
+# Simple in-memory rate limiter.
+# Limits each visitor IP to 200 non-static requests per 60 seconds.
+# Static assets are excluded so images, CSS, JS, and videos do not consume the limit.
+RATE_LIMIT_REQUESTS = int(os.environ.get("RATE_LIMIT_REQUESTS", "200"))
+RATE_LIMIT_WINDOW_SECONDS = int(os.environ.get("RATE_LIMIT_WINDOW_SECONDS", "60"))
+RATE_LIMIT_STORE: dict[str, deque[float]] = {}
+RATE_LIMIT_LOCK = Lock()
+
+
+def get_client_ip_for_rate_limit() -> str:
+    """Return the best available visitor IP for simple rate limiting."""
+    cloudflare_ip = request.headers.get("CF-Connecting-IP", "").strip()
+    if cloudflare_ip:
+        return cloudflare_ip
+
+    forwarded_for = request.headers.get("X-Forwarded-For", "").strip()
+    if forwarded_for:
+        return forwarded_for.split(",", 1)[0].strip()
+
+    return request.remote_addr or "unknown"
+
+
+@app.before_request
+def apply_simple_rate_limit():
+    """Block excessive requests without requiring Redis or external packages."""
+    if request.endpoint == "static" or request.path.startswith("/static/"):
+        return None
+
+    now = time.time()
+    cutoff = now - RATE_LIMIT_WINDOW_SECONDS
+    client_ip = get_client_ip_for_rate_limit()
+
+    with RATE_LIMIT_LOCK:
+        request_times = RATE_LIMIT_STORE.setdefault(client_ip, deque())
+
+        while request_times and request_times[0] <= cutoff:
+            request_times.popleft()
+
+        if len(request_times) >= RATE_LIMIT_REQUESTS:
+            return (
+                jsonify(
+                    {
+                        "success": False,
+                        "message": "Too many requests. Please try again after a minute.",
+                    }
+                ),
+                429,
+            )
+
+        request_times.append(now)
+
+        # Keep memory usage controlled by removing old inactive IP entries.
+        if len(RATE_LIMIT_STORE) > 5000:
+            stale_ips = [
+                ip
+                for ip, timestamps in RATE_LIMIT_STORE.items()
+                if not timestamps or timestamps[-1] <= cutoff
+            ]
+
+            for ip in stale_ips[:1000]:
+                RATE_LIMIT_STORE.pop(ip, None)
+
+    return None
 
 
 def utc_now() -> datetime:
