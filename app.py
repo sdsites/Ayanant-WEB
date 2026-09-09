@@ -498,7 +498,7 @@ def contact():
 def verify_turnstile_token(token: str, remote_ip: str | None = None) -> tuple[bool, str]:
     """Verify Cloudflare Turnstile token before accepting a contact message."""
     if not CLOUDFLARE_TURNSTILE_SECRET_KEY:
-        return True, ""
+        return False, "Cloudflare Turnstile is not configured."
 
     if not token:
         return False, "Please complete the Cloudflare security verification."
