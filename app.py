@@ -658,6 +658,10 @@ def unnatfarm():
 def nelocals():
     return render_template("nelocals.html")
 
+@app.route("/urban-veterinary-clinic")
+def urban_veterinary_clinic():
+    return render_template("urban_veterinary_clinic.html")
+
 
 @app.route("/apply", methods=["POST"])
 def apply():

@@ -330,9 +330,11 @@
         <!-- OUR BRANDS with mobile subitems -->
         <a class="mnav-link tog" href="javascript:void(0)" data-target="mbrands">OUR BRANDS <span class="mc">▾</span></a>
         <div class="msub" id="mbrands">
-         <a href="/unnatfarm">UNNATFARM</a>
+          <a href="/unnatfarm">UNNATFARM</a>
           <a href="{{ url_for('nelocals') }}">NE-LOCALS</a>
-         
+          <a href="{{ url_for('urban_veterinary_clinic') }}">
+            URBAN VETERINARY CLINIC
+          </a>
         </div>
         <a class="mnav-link" href="/gallery">VISUAL STORIES</a>
         <a class="mnav-link" href="/contact">GET IN TOUCH</a>
@@ -371,12 +373,13 @@
       <!-- OUR BRANDS dropdown (desktop) -->
       <div class="dd align-right" id="ddBrands">
         <a class="nav-link dd-toggle" href="#brands" aria-haspopup="true" aria-expanded="false">OUR BRANDS <span class="caret"></span></a>
-        <div class="dd-menu" role="menu" aria-label="Brands">
-           <a class="dd-item" href="/unnatfarm">Unnat Farm</a>
-          <a class="dd-item" href="{{ url_for('nelocals') }}">NE-LOCALS</a>
-         
-       
-        </div>
+          <div class="dd-menu" role="menu" aria-label="Brands">
+            <a class="dd-item" href="/unnatfarm">Unnat Farm</a>
+            <a class="dd-item" href="{{ url_for('nelocals') }}">NE-LOCALS</a>
+            <a class="dd-item" href="{{ url_for('urban_veterinary_clinic') }}">
+              Urban Veterinary Clinic
+            </a>
+          </div>
       </div>
 
       <a class="nav-link" href="/gallery">VISUAL STORIES</a>
